@@ -1,8 +1,26 @@
+from datetime import datetime
 from selenium import webdriver
 from bs4 import BeautifulSoup as BS
 from selenium.webdriver.chrome.options import Options
 import re
 import json
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, DateTime
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+a = 'sqlite:///' + os.path.join(basedir, 'mydb.db')
+engine = create_engine(a, echo=True)
+meta = MetaData()
+meta.create_all(engine)
+
+hotels1 = Table(
+   'Hotels', meta,
+   Column('id', Integer, primary_key=True),
+   Column('name', String),
+   Column('price', String),
+   Column('date', DateTime)
+)
 
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
@@ -18,9 +36,12 @@ URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
        "ers=&from_sf=1")
 
 
-def get_url(city):
-    url = URL.format(city=city, in_year=2020, in_month=5,
-                     in_day=1, out_year=2020, out_month=5, out_day=22)
+def get_url(city, checkin_date, checkout_date):
+    checkin = checkin_date.split('/')
+    checkout = checkout_date.split('/')
+    url = URL.format(city=city, in_year=int(checkin[2]), in_month=int(checkin[1]),
+                     in_day=int(checkin[0]), out_year=int(checkout[2]),
+                     out_month=int(checkout[1]), out_day=int(checkout[0]))
     return url
 
 
@@ -32,9 +53,6 @@ def get_html(url):
     return driver.page_source
 
 
-HTML = get_html(get_url('москва'))
-
-
 def get_hotel_price(html):
     soup = BS(html, 'html.parser')
     hotels = soup.find('div', id='hotellist_inner').find_all('div', {'data-hotelid': re.compile('.*')})
@@ -42,10 +60,20 @@ def get_hotel_price(html):
     for hotel in hotels:
         hotel_name = hotel.find('span', class_="sr-hotel__name").text.strip()
         try:
-            price = hotel.find('div', class_='bui-price-display__value prco-inline-block-maker-helper').text.strip()
+            raw_price = hotel.find('div', class_='bui-price-display__value prco-inline-block-maker-helper').text.strip()
+            price = ''
+            for sym in raw_price:
+                try:
+                    int(sym)
+                    price += sym
+                except ValueError:
+                    continue
         except AttributeError:
             price = 'no room'
         result.update({hotel_name: price})
+        ins = hotels1.insert().values(name=hotel_name, price=price, date=datetime.now())
+        conn = engine.connect()
+        result1 = conn.execute(ins)
     return result
 
 
@@ -61,17 +89,25 @@ def get_next_page_href(html):
     return('https://www.booking.com' + href)
 
 
+
 if __name__ == "__main__":
     # get_hotel_price(HTML)
-    page_count = get_page_count(HTML)
+    city = input('Enter city: ')
+    checkin = input('Enter checkin date (dd/mm/YYYY): ')
+    checkout = input('Enter checkout date (dd/mm/YYYY): ')
+    start = datetime.now()
+    page_count = get_page_count(get_html(get_url(city, checkin, checkout)))
     # print('Pages found:', page_count)
     # print(get_next_page_href(HTML))
-    result = []
-    current_page_url = get_url('москва')
-    for page in range(page_count - 1):
-        result.append(get_hotel_price(get_html(current_page_url)))
+    result = {}
+    current_page_url = get_url(city, checkin, checkout)
+    for page in range(2):
+        result.update(get_hotel_price(get_html(current_page_url)))
         print("Parsing process {:05.2f}%".format(page / (page_count - 1) * 100))
         current_page_url = get_next_page_href(get_html(current_page_url))
     with open('result.json', 'w', encoding='utf-8') as f:
-        for page in result:
-            json.dump(page, f, ensure_ascii=False)
+        for hotel, price in result.items():
+            json.dump((hotel, price), f, ensure_ascii=False)
+            f.write('\n')
+    finish = datetime.now() - start
+    print(finish)
