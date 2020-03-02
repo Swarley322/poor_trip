@@ -3,24 +3,32 @@ from selenium import webdriver
 from bs4 import BeautifulSoup as BS
 from selenium.webdriver.chrome.options import Options
 import re
-import json
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, DateTime
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description='Hotel prices')
+parser.add_argument('city', type=str, help='City destination')
+parser.add_argument('checkin', type=str, help='checkin date (dd/mm/yyyy)')
+parser.add_argument('checkout', type=str, help='checkout date (dd/mm/yyyy)')
+parser.add_argument('pages', type=int, help='Hotels page count')
+args = parser.parse_args()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 a = 'sqlite:///' + os.path.join(basedir, 'mydb.db')
 engine = create_engine(a, echo=True)
 meta = MetaData()
-meta.create_all(engine)
 
 hotels1 = Table(
    'Hotels', meta,
    Column('id', Integer, primary_key=True),
    Column('name', String),
    Column('price', String),
-   Column('date', DateTime)
+   Column('date', DateTime),
+   Column('hotel_link', String)
 )
+meta.create_all(engine)
 
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
@@ -70,8 +78,9 @@ def get_hotel_price(html):
                     continue
         except AttributeError:
             price = 'no room'
+        hotel_link = 'https://www.booking.com' + hotel.find('a', class_='hotel_name_link url')['href']
         result.update({hotel_name: price})
-        ins = hotels1.insert().values(name=hotel_name, price=price, date=datetime.now())
+        ins = hotels1.insert().values(name=hotel_name, price=price, date=datetime.now(), hotel_link=hotel_link)
         conn = engine.connect()
         result1 = conn.execute(ins)
     return result
@@ -89,25 +98,23 @@ def get_next_page_href(html):
     return('https://www.booking.com' + href)
 
 
-
 if __name__ == "__main__":
     # get_hotel_price(HTML)
-    city = input('Enter city: ')
-    checkin = input('Enter checkin date (dd/mm/YYYY): ')
-    checkout = input('Enter checkout date (dd/mm/YYYY): ')
     start = datetime.now()
-    page_count = get_page_count(get_html(get_url(city, checkin, checkout)))
+    page_count = get_page_count(get_html(get_url(args.city, args.checkin, args.checkout)))
     # print('Pages found:', page_count)
     # print(get_next_page_href(HTML))
     result = {}
-    current_page_url = get_url(city, checkin, checkout)
-    for page in range(2):
+    current_page_url = get_url(args.city, args.checkin, args.checkout)
+    for page in range(args.pages):
         result.update(get_hotel_price(get_html(current_page_url)))
-        print("Parsing process {:05.2f}%".format(page / (page_count - 1) * 100))
+        print("Parsing process {:05.2f}%".format(page / (args.pages) * 100))
         current_page_url = get_next_page_href(get_html(current_page_url))
-    with open('result.json', 'w', encoding='utf-8') as f:
-        for hotel, price in result.items():
-            json.dump((hotel, price), f, ensure_ascii=False)
-            f.write('\n')
+    # with open('result.json', 'w', encoding='utf-8') as f:
+    #     for hotel, price in result.items():
+    #         json.dump((hotel, price), f, ensure_ascii=False)
+    #         f.write('\n')
+    for hotel, price in result.items():
+        print(hotel, '-', price)
     finish = datetime.now() - start
     print(finish)
