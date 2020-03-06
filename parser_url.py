@@ -3,9 +3,10 @@ from selenium import webdriver
 from bs4 import BeautifulSoup as BS
 from selenium.webdriver.chrome.options import Options
 import re
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, DateTime
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, DateTime, Float
 import os
 import argparse
+import requests
 
 parser = argparse.ArgumentParser(description='Hotel prices')
 parser.add_argument('city', type=str, help='City destination')
@@ -14,21 +15,29 @@ parser.add_argument('checkout', type=str, help='checkout date (dd/mm/yyyy)')
 parser.add_argument('pages', type=int, help='Hotels page count')
 args = parser.parse_args()
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+# basedir = os.path.abspath(os.path.dirname(__file__))
 
-a = 'sqlite:///' + os.path.join(basedir, 'mydb.db')
-engine = create_engine(a, echo=True)
-meta = MetaData()
+# a = 'sqlite:///' + os.path.join(basedir, 'mydb.db')
+# engine = create_engine(a, echo=True)
+# meta = MetaData()
 
-hotels1 = Table(
-   'Hotels', meta,
-   Column('id', Integer, primary_key=True),
-   Column('name', String),
-   Column('price', String),
-   Column('date', DateTime),
-   Column('hotel_link', String)
-)
-meta.create_all(engine)
+# hotels1 = Table(
+#    'Hotels', meta,
+#    Column('id', Integer, primary_key=True),
+#    Column('name', String),
+#    Column('price', String),
+#    Column('living_date', DateTime),
+#    Column('hotel_link', String),
+#    Column('parsing_date', DateTime),
+#    Column('rating', Float),
+#    Column('reviews', Integer),
+#    Column('stars', Integer),
+#    Column('distance_from_center', Float),
+#    Column('img_url', String)
+# )
+# meta.create_all(engine)
+
+
 
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
@@ -61,12 +70,13 @@ def get_html(url):
     return driver.page_source
 
 
-def get_hotel_price(html):
+def get_hotel_information(html):
     soup = BS(html, 'html.parser')
     hotels = soup.find('div', id='hotellist_inner').find_all('div', {'data-hotelid': re.compile('.*')})
-    result = {}
+    # result = {}
     for hotel in hotels:
         hotel_name = hotel.find('span', class_="sr-hotel__name").text.strip()
+        
         try:
             raw_price = hotel.find('div', class_='bui-price-display__value prco-inline-block-maker-helper').text.strip()
             price = ''
@@ -77,13 +87,48 @@ def get_hotel_price(html):
                 except ValueError:
                     continue
         except AttributeError:
-            price = 'no room'
+            price = 0
+        
         hotel_link = 'https://www.booking.com' + hotel.find('a', class_='hotel_name_link url')['href']
-        result.update({hotel_name: price})
-        ins = hotels1.insert().values(name=hotel_name, price=price, date=datetime.now(), hotel_link=hotel_link)
-        conn = engine.connect()
-        result1 = conn.execute(ins)
-    return result
+        
+        try:
+            rating = float(hotel.find('div', class_='bui-review-score__badge').text.strip().replace(',', '.'))
+        except AttributeError:
+            rating = 0.0
+        
+        try:
+            raw_reviews = hotel.find('div', class_='bui-review-score__text').text.strip()
+            reviews = ''
+            for sym in raw_reviews:
+                try:
+                    int(sym)
+                    reviews += sym
+                except ValueError:
+                    continue
+        except AttributeError:
+            reviews = 0
+        
+        try:
+            img_url = hotel.find('img', class_='hotel_image')['data-highres']
+        except AttributeError:
+            img_url = "no photo"
+        # result.update({hotel_name: price})
+        # ins = hotels1.insert().values(
+        #    name=hotel_name, price=price, living_date=, hotel_link=hotel_link,
+        #    parsing_date=datetime.now(), rating=rating, reviews=reviews,
+        #    stars=stars, distance_from_center=distance, img_url=img_url
+        # )
+        # conn = engine.connect()
+        # result1 = conn.execute(ins)
+        print(hotel_name, rating, reviews, img_url, '\n')
+    # return result
+
+
+def get_hotel_description(html):
+    soup = BS(html, 'html.parser')
+    rows = soup.find('div', id='property_description_content').find_all('p')
+    description = ' '.join([row.text for row in rows])
+    picture = soup.find('div', id='photo_wrapper').find('img')['src']
 
 
 def get_page_count(html):
@@ -98,23 +143,35 @@ def get_next_page_href(html):
     return('https://www.booking.com' + href)
 
 
+def get_city_picture(city):
+    # html = requests.get(f'https://ru.wikipedia.org/wiki/{city}')
+    html = get_html(f'https://ru.wikipedia.org/wiki/{city}')
+    soup = BS(html, 'html.parser')
+    href = soup.find('td', class_='infobox-image').find('a')['href']
+    picture_soup = BS(get_html('https:' + href), 'html.parser')
+    picture_link = picture_soup.find('div', class_='fullImageLink').find('a')['href']
+    return picture_link
+
+
 if __name__ == "__main__":
-    # get_hotel_price(HTML)
+    # get_hotel_information(HTML)
     start = datetime.now()
-    page_count = get_page_count(get_html(get_url(args.city, args.checkin, args.checkout)))
+    # page_count = get_page_count(get_html(get_url(args.city, args.checkin, args.checkout)))
     # print('Pages found:', page_count)
     # print(get_next_page_href(HTML))
-    result = {}
+    # result = {}
     current_page_url = get_url(args.city, args.checkin, args.checkout)
     for page in range(args.pages):
-        result.update(get_hotel_price(get_html(current_page_url)))
         print("Parsing process {:05.2f}%".format(page / (args.pages) * 100))
-        current_page_url = get_next_page_href(get_html(current_page_url))
+        html = get_html(current_page_url)
+        # result.update(get_hotel_information(html))
+        get_hotel_information(html)
+        current_page_url = get_next_page_href(html)
     # with open('result.json', 'w', encoding='utf-8') as f:
     #     for hotel, price in result.items():
     #         json.dump((hotel, price), f, ensure_ascii=False)
     #         f.write('\n')
-    for hotel, price in result.items():
-        print(hotel, '-', price)
+    # for hotel, price in result.items():
+    #     print(hotel, '-', price)
     finish = datetime.now() - start
-    print(finish)
+    # print(get_city_picture("Москва"))
