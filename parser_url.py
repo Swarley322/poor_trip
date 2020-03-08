@@ -212,6 +212,22 @@ def get_city_picture(city):
     return picture_link
 
 
+def get_best_hotels(city):
+    result = []
+    avg_reviews = session.query(AvgPriceReviews).filter(AvgPriceReviews.city == city).first().avg_reviews
+    max_price = 0 # здесь должна быть максимальная стоимость проживания для рекомендации отелей
+    for hotel in session.query(Hotel):
+        if hotel.reviews and hotel.week_price:
+            if hotel.reviews < avg_reviews:
+                continue
+            else:
+                result.append((hotel.name, hotel.rating))
+        else:
+            continue
+    return sorted(result, key=lambda x: x[1], reverse=True)
+
+
+
 if __name__ == "__main__":
     # get_hotel_information(HTML)
     start = datetime.now()
