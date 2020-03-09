@@ -2,6 +2,8 @@ RUN
 ===
 .. code-block:: text
 
+    $ python3 -m venv env
+    $ source env/bin/activate
     $ pip install -r requirements.txt
     $ python3 create_db.py
     $ python3 get_hotels.py
