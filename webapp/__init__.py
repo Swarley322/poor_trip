@@ -15,12 +15,14 @@ def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && 
         form = LoginForm()
         if form.validate_on_submit():
             city = request.form["city"]
-            return redirect(url_for("index", city=city))
+            date = request.form["date"]
+            return redirect(url_for("index", city=city, date=date))
         return render_template('start.html', form=form)
 
     @app.route('/index')
     def index():
-        hotel_list = get_best_hotels(request.args.get("city"))
+        date = request.args["date"]
+        hotel_list = get_best_hotels(request.args["city"])
         return render_template('index.html', hotel_list=hotel_list)
 
     return app

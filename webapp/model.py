@@ -8,15 +8,15 @@ class Hotel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     city = db.Column(db.String)
     name = db.Column(db.String)
-    week_price = db.Column(db.String, nullable=True)
+    week_price = db.Column(db.Integer, nullable=True)
     living_date = db.Column(db.String)
     hotel_link = db.Column(db.String)
     parsing_date = db.Column(db.String)
-    rating = db.Column(db.Float)
-    reviews = db.Column(db.Integer)
+    rating = db.Column(db.Float, nullable=True)
+    reviews = db.Column(db.Integer, nullable=True)
     stars = db.Column(db.String, nullable=True)
-    distance_from_center = db.Column(db.String)
-    img_url = db.Column(db.String)
+    distance_from_center = db.Column(db.String, nullable=True)
+    img_url = db.Column(db.String, nullable=True)
 
     def __repr__(self):
         return f"""Hotel(city={city}, name={name}, week_price={week_price},
