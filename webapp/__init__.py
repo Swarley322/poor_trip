@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, url_for, redirect, flash
-from webapp.get_all_hotels import get_best_hotels
+from webapp.get_all_hotels import get_best_hotels, get_all_hotels
+from webapp.get_city import get_city_dict
 # from webapp.skyscanner import get_tickets
 from webapp.model import db
-from webapp.forms import LoginForm
+from webapp.forms import Form
 
 
 def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && flask run
@@ -12,17 +13,37 @@ def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && 
 
     @app.route('/', methods=["GET", "POST"])
     def start():
-        form = LoginForm()
+        form = Form()
         if form.validate_on_submit():
-            city = request.form["city"]
-            date = request.form["date"]
-            return redirect(url_for("index", city=city, date=date))
+            city = request.form["city"].strip().capitalize()
+            checkin = request.form["checkin"].strip()
+            checkout = request.form["checkout"].strip()
+            money = request.form["money"]
+            # print(checkin)
+            # print(checkout)
+            return redirect(url_for("city", city=city, checkin=checkin, checkout=checkout, money=money))
         return render_template('start.html', form=form)
+
+    @app.route('/city', methods=["GET", "POST"])
+    def city():
+        checkin = request.args["checkin"]
+        checkout = request.args["checkout"]
+        money = int(request.args["money"])
+        city_list = get_city_dict(money, checkin, checkout)
+        return render_template("city.html", city_list=city_list)
 
     @app.route('/index')
     def index():
-        date = request.args["date"]
-        hotel_list = get_best_hotels(request.args["city"])
-        return render_template('index.html', hotel_list=hotel_list)
+        city = request.args["city"]
+        checkin = request.args["checkin"]
+        checkout = request.args["checkout"]
+        money = int(request.args["money"])
+        # get_all_hotels(city, checkin, checkout)
+        print(city)
+        print(checkin)
+        print(checkout)
+        print(money)
+        hotel_list = get_best_hotels(city, checkin, checkout, money)
+        return render_template('index2.html', hotel_list=hotel_list)
 
     return app

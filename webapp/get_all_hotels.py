@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup as BS
 from selenium.webdriver.chrome.options import Options
 import re
 
-from webapp.model import db, Hotel, AvgPriceReviews
+from sqlalchemy import or_
+from webapp.model import db, Hotel, AvgPriceReviews, City
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
        "I46AdIM1gEaMIBiAEBmAEhuAEHyAEM2AEB6AEB-AELiAIBqAIDuAKs6O3yBcACAQ&sid="
@@ -22,9 +23,9 @@ URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
 current_date = datetime.now().strftime('%Y-%m-%d')
 
 
-def get_url(city, checkin_date, checkout_date):
-    checkin = checkin_date.split('/')
-    checkout = checkout_date.split('/')
+def get_url(city, checkcheckin, checkcheckout):
+    checkin = checkcheckin.split('/')
+    checkout = checkcheckout.split('/')
     url = URL.format(
         city=city, in_year=int(checkin[2]), in_month=int(checkin[1]),
         in_day=int(checkin[0]), out_year=int(checkout[2]),
@@ -46,13 +47,14 @@ def get_valid_value(value):
     return value if value else None
 
 
-def get_hotel_information(html):
+def get_hotel_information(html, city, checkin, checkout):
     soup = BS(html, 'html.parser')
     hotels = soup.find('div', id='hotellist_inner').find_all('div', {'data-hotelid': re.compile('.*')})
     for hotel in hotels:
         hotel_name = hotel.find('span', class_="sr-hotel__name").text.strip()
 
-        week_price = get_valid_value(hotel.find('div', class_='bui-price-display__value prco-inline-block-maker-helper'))
+        week_price = get_valid_value(hotel.find('div', class_="bui-price-display__value prco-inline-block-maker-helper"))
+        # print(week_price)
         if week_price:
             week_price = int(''.join([digit for digit in week_price.text.strip() if digit.isdigit()]))
 
@@ -71,51 +73,63 @@ def get_hotel_information(html):
         distance = get_valid_value(hotel.find('span', {'data-tooltip-position': "top"}))
         if distance:
             distance = distance.text.strip()
-        
+
         stars = get_valid_value(hotel.find('span', class_='sr-hotel__title-badges')
                                      .find('span', class_='invisible_spoken'))
         if stars:
             stars = stars.text.strip()
+        # print(hotel_name)
 
-        safe_information(hotel_name, week_price, hotel_link, rating,
-                         reviews, img_url, distance, stars)
+        safe_information(city, hotel_name, week_price, hotel_link, rating,
+                         reviews, img_url, distance, stars, checkin, checkout)
 
 
-def safe_information(hotel_name, week_price, hotel_link, rating,
-                     reviews, img_url, distance, stars):
-    hotel_exist = Hotel.query.filter(Hotel.name == hotel_name) \
-                             .filter(Hotel.parsing_date == current_date).count()
+def safe_information(city, hotel_name, week_price, hotel_link, rating,
+                     reviews, img_url, distance, stars, checkin, checkout):
+    week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
+    year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
+    city_id = City.query.filter(or_(City.ru_name == city.title(),
+                                    City.eng_name == city.title())).first()
+    hotel_exist = db.session.query(db.exists().where(Hotel.name == hotel_name)
+                                              .where(Hotel.parsing_date == current_date)
+                                              .where(Hotel.week_number == week_number)
+                                              .where(Hotel.year == year)).scalar()
     if not hotel_exist:
         hotel = Hotel(
             name=hotel_name, week_price=week_price,
-            living_date="01/05/2020-10/05/2020",
+            checkin_date=checkin, checkout_date=checkout,
             hotel_link=hotel_link, parsing_date=current_date,
             rating=rating, reviews=reviews, stars=stars,
-            distance_from_center=distance, img_url=img_url, city="Токио"
+            distance_from_center=distance, img_url=img_url,
+            week_number=week_number, city=city_id, year=year
         )
         db.session.add(hotel)
         db.session.commit()
 
 
-def get_avg_price(city):
+def get_avg_price(city_id, week_number, year):
     count_hotels = 0
     price = 0
-    for hotel in Hotel.query.filter(Hotel.city == city.title()) \
-                            .filter(Hotel.parsing_date == current_date):
+    for hotel in Hotel.query.filter(Hotel.city_id == city_id) \
+                            .filter(Hotel.parsing_date == current_date) \
+                            .filter(Hotel.week_number == week_number) \
+                            .filter(Hotel.year == year):
         if hotel.week_price:
             price += int(hotel.week_price)
             count_hotels += 1
     return int(price / count_hotels)
 
 
-def get_avg_reviews(city):
+def get_avg_reviews(city_id, week_number, year):
     count_hotels = 0
     reviews = 0
-    for hotel in Hotel.query.filter(Hotel.city == city.title()) \
-                            .filter(Hotel.parsing_date == current_date):
+    for hotel in Hotel.query.filter(Hotel.city_id == city_id) \
+                            .filter(Hotel.parsing_date == current_date) \
+                            .filter(Hotel.week_number == week_number) \
+                            .filter(Hotel.year == year):
         if hotel.reviews:
             reviews += int(hotel.reviews)
-        count_hotels += 1
+            count_hotels += 1
     return int(reviews / count_hotels)
 
 
@@ -139,39 +153,67 @@ def get_next_page_href(html):
     return('https://www.booking.com' + href)
 
 
-def get_hotels(city, in_date, out_date):
-    url = get_url(city, in_date, out_date)
+def get_all_hotels(city, checkin, checkout):
+    url = get_url(city, checkin, checkout)
     pages = get_page_count(get_html(url))
     current_page_url = url
+    week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
+    year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
     for page in range(pages - 1):
         print("Parsing process {:05.2f}%".format(page / (pages - 1) * 100))
         html = get_html(current_page_url)
-        get_hotel_information(html)
+        get_hotel_information(html, city, checkin, checkout)
         current_page_url = get_next_page_href(html)
-    if not AvgPriceReviews.query.filter(AvgPriceReviews.city == "Токио").count():
-        db.session.add(AvgPriceReviews(
-            city="Токио",
-            avg_reviews=get_avg_reviews("Токио"),
-            avg_price=get_avg_price("Токио"),
-            date=current_date
-        ))
+    city_id = City.query.filter(or_(City.ru_name == city.title(),
+                                    City.eng_name == city.title())).first()
+    avg_exist = db.session.query(
+                    db.exists().where(AvgPriceReviews.city_id == city_id.id)
+                               .where(AvgPriceReviews.week_number == week_number)
+                               .where(AvgPriceReviews.year == year)).scalar()
+    if avg_exist:
+        x = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id.id).first()
+        x.avg_week_price = get_avg_price(city_id.id, week_number, year)
+        x.avg_reviews = get_avg_reviews(city_id.id, week_number, year)
+        x.avg_day_price = int(get_avg_price(city_id.id, week_number, year) / 7)
+        x.parsing_date = current_date
+        x.week_number = week_number
+        x.year = year
         db.session.commit()
     else:
-        x = AvgPriceReviews.query.filter(AvgPriceReviews.city == "Токио").first()
-        x.avg_price = get_avg_price("Токио")
-        x.avg_reviews = get_avg_reviews("Токио")
-        x.date = current_date
+        db.session.add(AvgPriceReviews(
+            city=city_id,
+            avg_reviews=get_avg_reviews(city_id.id, week_number, year),
+            avg_week_price=get_avg_price(city_id.id, week_number, year),
+            avg_day_price=int(get_avg_price(city_id.id, week_number, year) / 7),
+            parsing_date=current_date,
+            week_number=week_number,
+            year=year)
+        )
         db.session.commit()
 
 
-def get_best_hotels(city):
-    result = []
-    avg_reviews = AvgPriceReviews.query.filter(AvgPriceReviews.city == city) \
-                                       .filter(AvgPriceReviews.date == current_date) \
+def get_best_hotels(city, checkin, checkout, money):
+    week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
+    year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
+    city_id = City.query.filter(or_(
+                            City.ru_name == city.title(),
+                            City.eng_name == city.title()
+                            )).first().id
+    avg_reviews = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id) \
+                                       .filter(AvgPriceReviews.parsing_date == current_date) \
+                                       .filter(AvgPriceReviews.year == year) \
                                        .first().avg_reviews
-    max_price = 0 # здесь должна быть максимальная стоимость проживания для рекомендации отелей
-    for hotel in Hotel.query.filter(Hotel.parsing_date == current_date):
-        if hotel.reviews and hotel.week_price and avg_reviews >= hotel.reviews:
+    # avg_day_price = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id) \
+    #                                      .filter(AvgPriceReviews.parsing_date == current_date) \
+    #                                      .filter(AvgPriceReviews.year == year) \
+    #                                      .first().avg_day_price
+    result = []
+    for hotel in Hotel.query.filter(Hotel.parsing_date == current_date) \
+                            .filter(Hotel.week_number == week_number) \
+                            .filter(Hotel.year == year) \
+                            .filter(Hotel.city_id == city_id):
+        if hotel.reviews and hotel.week_price and \
+           hotel.week_price <= money and avg_reviews <= hotel.reviews:
             result.append({
                 "hotel_name": hotel.name,
                 "rating": hotel.rating,

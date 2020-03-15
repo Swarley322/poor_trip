@@ -25,9 +25,23 @@
                                     {% endfor %}
                                 </p>
                                 <p>
-                                    {{ form.date.label }}<br>
-                                    {{ form.date(size=32) }}
-                                    {% for error in form.date.errors %}
+                                    {{ form.checkin.label }}<br>
+                                    {{ form.checkin(size=32) }}
+                                    {% for error in form.checkin.errors %}
+                                    <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </p>
+                                <p>
+                                    {{ form.checkout.label }}<br>
+                                    {{ form.checkout(size=32) }}
+                                    {% for error in form.checkout.errors %}
+                                    <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </p>
+                                <p>
+                                    {{ form.money.label }}<br>
+                                    {{ form.money(size=32) }}
+                                    {% for error in form.money.errors %}
                                     <span style="color: red;">[{{ error }}]</span>
                                     {% endfor %}
                                 </p>
