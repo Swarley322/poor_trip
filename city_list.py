@@ -8,14 +8,14 @@ app = create_app()
 with app.app_context():
     PART_OF_THE_WORLD = {
             "Europe": {
-                "England": ["London", "Liverpool"],
-                "Russia": ["Moscow", "Krasnodar", "Domodedovo"]
+                "England": ["London"],
+                "Russia": ["Moscow"]
                 },
             "Asia": {
-                "Japan": ["Tokyo", "Kyoto"]
+                "Japan": ["Tokyo"]
                 },
             "America": {
-                "USA": ["New-York", "Detroit"]
+                "USA": ["New-York"]
                 }
         }
 

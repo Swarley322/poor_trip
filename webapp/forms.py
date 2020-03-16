@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 
 
 class Form(Form):
-    city = StringField('City', validators=[DataRequired()])
+    city = StringField('City')
     checkin = DateTimeField('Checkin Date (mm/dd/yyyy)', format='%d/%m/%Y', validators=[DataRequired()])
     checkout = DateTimeField('Chekout Date (mm/dd/yyyy)', format='%d/%m/%Y', validators=[DataRequired()])
     money = IntegerField('Money', validators=[DataRequired()])

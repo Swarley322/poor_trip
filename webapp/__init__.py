@@ -30,7 +30,7 @@ def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && 
         checkout = request.args["checkout"]
         money = int(request.args["money"])
         city_list = get_city_dict(money, checkin, checkout)
-        return render_template("city.html", city_list=city_list)
+        return render_template("cards2.html", city_list=city_list)
 
     @app.route('/index')
     def index():
@@ -38,12 +38,11 @@ def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && 
         checkin = request.args["checkin"]
         checkout = request.args["checkout"]
         money = int(request.args["money"])
-        # get_all_hotels(city, checkin, checkout)
-        print(city)
-        print(checkin)
-        print(checkout)
-        print(money)
         hotel_list = get_best_hotels(city, checkin, checkout, money)
         return render_template('index2.html', hotel_list=hotel_list)
+
+    @app.route('/cards')
+    def cards():
+        return render_template("cards.html")
 
     return app

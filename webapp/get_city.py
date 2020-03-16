@@ -1,13 +1,27 @@
 from datetime import datetime
 from webapp.model import AvgPriceReviews
 
+current_day = datetime.now().strftime("%Y-%m-%d")
+
 
 def get_city_dict(money, checkin, checkout):
     days = int((datetime.strptime(checkout, "%d/%m/%Y") -
                 datetime.strptime(checkin, "%d/%m/%Y")).days)
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
-    citys = []
-    for city in AvgPriceReviews.query.filter(AvgPriceReviews.week_number == week_number).all():
+    citys = {
+        "Europe": {
+            "England": [],
+            "Russia": []
+            },
+        "Asia": {
+            "Japan": []
+            },
+        "America": {
+            "USA": []
+            }
+    }
+    for city in AvgPriceReviews.query.filter(AvgPriceReviews.week_number == week_number) \
+                                     .filter(AvgPriceReviews.parsing_date == current_day).all():
         if city.avg_day_price * days < money:
             result = {
                 "name": city.city.ru_name,
@@ -16,5 +30,6 @@ def get_city_dict(money, checkin, checkout):
                 "checkout": checkout,
                 "money": money
             }
-            citys.append(result)
+            citys[city.city.eng_part_of_the_world][city.city.eng_country].append(result)
     return citys
+
