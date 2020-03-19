@@ -176,7 +176,6 @@ def get_all_hotels(city, checkin, checkout):
         x.avg_reviews = get_avg_reviews(city_id.id, week_number, year)
         x.avg_day_price = int(get_avg_price(city_id.id, week_number, year) / 7)
         x.parsing_date = current_date
-        x.week_number = week_number
         x.year = year
         db.session.commit()
     else:

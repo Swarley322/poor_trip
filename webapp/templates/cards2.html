@@ -59,7 +59,7 @@
                         </p>
                         <div class="collapse" id="russia">
                             <div class="card card-body">
-                                {% for city in city_list.Europe.England %}
+                                {% for city in city_list.Europe.Russia %}
                                     <h6><a href="{{ url_for('index') }}?city={{ city.name }}&checkin={{ city.checkin }}&checkout={{ city.checkout }}&money={{ city.money }}">{{ city.name }}</a> </h6>
                                     <p>price - {{ city.price }} rub</p>
                                     <hr />
