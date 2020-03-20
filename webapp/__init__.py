@@ -3,9 +3,6 @@ from webapp.get_all_hotels import get_best_hotels, get_all_hotels
 from webapp.get_city import get_city_dict
 # from webapp.skyscanner import get_tickets
 from webapp.forms import Form
-from celery import Celery
-
-celery = Celery()
 
 
 def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && flask run

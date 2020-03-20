@@ -5,6 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'webapp.db')
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 CSRF_ENABLED = True
 SECRET_KEY = 'you-will-never-guess'
 
@@ -16,7 +17,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERYBEAT_SCHEDULE = {
         "tasker": {
             "task": "webapp.tasks.get_hotels",
-            "schedule": crontab(minute=10),
+            "schedule": crontab(minute=34, hour="*/1"),
             "args": ()
         }
 }
