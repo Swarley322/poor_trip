@@ -5,4 +5,5 @@ env
 .DS_store
 webapp/skyscanner.py
 celerybeat*
-dump.rdb
+*.rdb
+celerybeat-schedule

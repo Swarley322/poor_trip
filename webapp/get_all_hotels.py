@@ -171,7 +171,9 @@ def get_all_hotels(city, checkin, checkout):
                                .where(AvgPriceReviews.week_number == week_number)
                                .where(AvgPriceReviews.year == year)).scalar()
     if avg_exist:
-        x = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id.id).first()
+        x = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id.id) \
+                                 .filter(AvgPriceReviews.week_number == week_number) \
+                                 .filter(AvgPriceReviews.year == year).first()
         x.avg_week_price = get_avg_price(city_id.id, week_number, year)
         x.avg_reviews = get_avg_reviews(city_id.id, week_number, year)
         x.avg_day_price = int(get_avg_price(city_id.id, week_number, year) / 7)

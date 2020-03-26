@@ -27,8 +27,6 @@ def make_celery(app):
     return celery
 
 
-# celery_app = Flask(__name__)
-# celery_app.config.from_pyfile('config.py')
 celery = make_celery(app)
 
 
@@ -51,3 +49,15 @@ def get_hotels():
     #                     checkout.strftime("%d/%m/%Y"))
     #     checkin = checkout
         # print(f"{city} done")
+
+
+# @celery.task()
+# def task1():
+#     print("run task1")
+
+
+# @celery.task()
+# def task2():
+#     print("run task2")
+
+

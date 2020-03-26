@@ -1,10 +1,11 @@
 from webapp import create_app
 from webapp.get_all_hotels import get_all_hotels
 from datetime import datetime, timedelta
-from webapp.model import City
+from webapp.model import City, db
 
 current_date = datetime.now()
 app = create_app()
+db.init_app(app)
 
 with app.app_context():
     for city in City.query.all():

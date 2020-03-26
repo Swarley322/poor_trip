@@ -17,7 +17,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERYBEAT_SCHEDULE = {
         "tasker": {
             "task": "webapp.tasks.get_hotels",
-            "schedule": crontab(minute=34, hour="*/1"),
+            "schedule": crontab(minute=0, hour=12),
             "args": ()
         }
 }

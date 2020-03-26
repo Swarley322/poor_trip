@@ -6,8 +6,8 @@ RUN
     $ source env/bin/activate
     $ pip install -r requirements.txt
     $ python3 create_db.py
-    $ python3 city_list.py
-    $ python3 get_hotels.py
+    $ python3 city_list.py    
     $ export FLASK_APP=webapp && export FLASK_ENV=development && flask run
+    $ python3 get_hotels.py
 
 
