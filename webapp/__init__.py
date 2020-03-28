@@ -5,7 +5,7 @@ from webapp.get_city import get_city_dict
 from webapp.forms import Form
 
 
-def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && flask run
+def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && FLASK_APP_PORT=5000 && flask run
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
 

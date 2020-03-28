@@ -51,9 +51,9 @@ def get_hotels():
         # print(f"{city} done")
 
 
-# @celery.task()
-# def task1():
-#     print("run task1")
+@celery.task()
+def task1():
+    print("run task1")
 
 
 # @celery.task()

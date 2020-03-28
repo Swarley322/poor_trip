@@ -1,0 +1,13 @@
+version: "2"
+services:
+    redis:
+        image: redis
+    worker:
+        image: task:test
+        environment:
+            - CELERY_BROKER_URL=redis://redis:6379
+            - CELERY_RESULT_BACKEND=redis://redis:6379
+        links:
+            - redis
+        depends_on:
+            - "redis"

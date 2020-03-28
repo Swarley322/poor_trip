@@ -15,5 +15,6 @@ Docker RUN
 .. code-block:: text
 
     $ docker build -t [name]:[tag]
+    $ docker-compose up
     $ docker run --name [name] -p 5000:5000 [image_name]:[image_tag]
 
