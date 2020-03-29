@@ -3,9 +3,6 @@ from selenium import webdriver
 from bs4 import BeautifulSoup as BS
 from selenium.webdriver.chrome.options import Options
 import re
-# from webapp.config import CHROMEDRIVER
-# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
 from sqlalchemy import or_
 from webapp.model import db, Hotel, AvgPriceReviews, City
 
@@ -41,9 +38,9 @@ def get_html(url):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
 
-    capabilities = chrome_options.to_capabilities()
-    # driver = webdriver.Chrome(options=chrome_options, executable_path=CHROMEDRIVER)
-    driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
+    # capabilities = chrome_options.to_capabilities()
+    driver = webdriver.Chrome(options=chrome_options)
+    # driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     driver.get(url)
     html = driver.page_source
     driver.close()

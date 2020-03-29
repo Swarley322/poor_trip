@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, url_for, redirect, flash
-from webapp.get_all_hotels import get_best_hotels, get_all_hotels
+from flask import Flask, render_template, request, url_for, redirect
+from webapp.get_all_hotels import get_best_hotels
 from webapp.get_city import get_city_dict
-# from webapp.skyscanner import get_tickets
 from webapp.model import db
 from webapp.forms import Form
 

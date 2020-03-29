@@ -1,6 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from celery import Celery
-import flask
 
 
 db = SQLAlchemy()

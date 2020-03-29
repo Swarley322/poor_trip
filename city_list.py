@@ -1,5 +1,4 @@
 from googletrans import Translator
-# from translate import Translator
 from webapp import create_app
 from webapp.model import db, City
 
@@ -31,20 +30,3 @@ with app.app_context():
                 )
                 db.session.add(city)
                 db.session.commit()
-
-# PART_OF_THE_WORLD = {
-#             "Europe": {
-#                 "England": ["London", "Liverpool", "Brighton"],
-#                 "Russia": ["Moscow", "Krasnodar"]
-#                 },
-#             "Asia": {
-#                 "Japan": ["Tokyo", "Kyoto"]
-#                 },
-#             "America": {
-#                 "USA": ["New-York", "Detroit"]
-#                 }
-#         }
-# for world_part, country_list in PART_OF_THE_WORLD.items():
-#     for country, city_list in country_list.items():
-#         for city in city_list:
-#             print(translator.translate(city))

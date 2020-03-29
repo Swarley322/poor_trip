@@ -1,8 +1,7 @@
 from celery import Celery
-from flask import Flask
 from webapp import create_app
-from webapp.get_all_hotels import get_all_hotels
 from datetime import datetime, timedelta
+from webapp.get_all_hotels import get_all_hotels
 from webapp.model import db, City
 
 current_date = datetime.now()
@@ -34,7 +33,7 @@ celery = make_celery(app)
 def get_hotels():
     for city in City.query.all():
         checkin = current_date + timedelta(days=1)
-        for _ in range(1):
+        for _ in range(5):
             checkout = checkin + timedelta(days=7)
             get_all_hotels(city.ru_name,
                            checkin.strftime("%d/%m/%Y"),
@@ -54,10 +53,3 @@ def get_hotels():
 # @celery.task()
 # def task1():
 #     print("run task1")
-
-
-# @celery.task()
-# def task2():
-#     print("run task2")
-
-

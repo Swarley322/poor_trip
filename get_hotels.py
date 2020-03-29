@@ -24,11 +24,3 @@ with app.app_context():
         #                    checkin.strftime("%d/%m/%Y"),
         #                    checkout.strftime("%d/%m/%Y"))
         #     checkin = checkout
-        
-        # celery.conf.beat_schedule = {
-        #     "hotel-parsing": {
-        #                 "task": "hotel.hotel",
-        #                 "args": (1, 2),
-        #                 "schedule": crontab(minute=10)
-        #                 }
-        # }

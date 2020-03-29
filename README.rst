@@ -14,6 +14,6 @@ Docker RUN
 ==========
 .. code-block:: text
     
-    # по расписанию парсит 1 раз в час, можно поменять в файле /webapp/tasks.py
+    # по расписанию парсит каждые 2 часа, можно поменять в файле /webapp/config.py
     $ docker-compose up
 
