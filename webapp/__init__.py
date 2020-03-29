@@ -2,12 +2,14 @@ from flask import Flask, render_template, request, url_for, redirect, flash
 from webapp.get_all_hotels import get_best_hotels, get_all_hotels
 from webapp.get_city import get_city_dict
 # from webapp.skyscanner import get_tickets
+from webapp.model import db
 from webapp.forms import Form
 
 
 def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && FLASK_APP_PORT=5000 && flask run
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
+    db.init_app(app)
 
     @app.route('/', methods=["GET", "POST"])
     def start():

@@ -6,4 +6,7 @@ env
 webapp/skyscanner.py
 celerybeat*
 *.rdb
-celerybeat-schedule
+celerybeat-schedule.bak
+celerybeat-schedule.dir
+celerybeat-schedule.dat
+celeryd.pid

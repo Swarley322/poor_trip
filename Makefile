@@ -1,15 +1,14 @@
 # CURRENT_DIR = $(shell pwd)
-all: t1 t3 t2
+all: flask worker tasker
 	@echo DONE	
 
-t1:
-	@export FLASK_APP=webapp && export FLASK_ENV=development && flask run
+flask:
+	@export FLASK_APP=webapp && export FLASK_ENV=development && FLASK_APP_PORT=5000 && flask run --host=0.0.0.0
+worker:
+	@celery -A webapp.tasks:celery worker --pidfile= --loglevel=info
 
-t2:
-	@python3 get_hotels.py
-
-t3:
-	@redis-server
+tasker:
+	@celery -A webapp.tasks.celery beat
 
 .PHONY:all
 

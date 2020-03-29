@@ -34,7 +34,7 @@ celery = make_celery(app)
 def get_hotels():
     for city in City.query.all():
         checkin = current_date + timedelta(days=1)
-        for _ in range(2):
+        for _ in range(1):
             checkout = checkin + timedelta(days=7)
             get_all_hotels(city.ru_name,
                            checkin.strftime("%d/%m/%Y"),
@@ -42,18 +42,18 @@ def get_hotels():
             checkin = checkout
     # city = "Нью-Йорк"
     # checkin = current_date + timedelta(days=1)
-    # for _ in range(5):
+    # for _ in range(2):
     #     checkout = checkin + timedelta(days=7)
     #     get_all_hotels(city,
     #                     checkin.strftime("%d/%m/%Y"),
     #                     checkout.strftime("%d/%m/%Y"))
     #     checkin = checkout
-        # print(f"{city} done")
+    #     print(f"{city} done")
 
 
-@celery.task()
-def task1():
-    print("run task1")
+# @celery.task()
+# def task1():
+#     print("run task1")
 
 
 # @celery.task()

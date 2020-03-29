@@ -2,12 +2,21 @@ version: "2"
 services:
     redis:
         image: redis
+    selenium:
+        image: selenium/standalone-chrome
+        ports:
+            - 4444:4444
     worker:
-        image: task:test
+        build: .
+        # image: task:test
         environment:
             - CELERY_BROKER_URL=redis://redis:6379
             - CELERY_RESULT_BACKEND=redis://redis:6379
+        ports:
+            - 5000:5000
         links:
             - redis
+            - selenium
         depends_on:
             - "redis"
+            - "selenium"
