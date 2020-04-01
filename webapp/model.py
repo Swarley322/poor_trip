@@ -1,7 +1,11 @@
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_migrate import Migrate
+from webapp import db
 
-
-db = SQLAlchemy()
+# app = create_app()
+# db = SQLAlchemy(app)
+# migrate = Migrate(app, db)
+# db = SQLAlchemy()
 
 
 class Hotel(db.Model):
@@ -47,6 +51,7 @@ class AvgPriceReviews(db.Model):
 class City(db.Model):
     __tablename__ = "City"
     id = db.Column(db.Integer, primary_key=True)
+    test_column = db.Column(db.Integer)
     eng_part_of_the_world = db.Column(db.String)
     ru_part_of_the_world = db.Column(db.String)
     eng_name = db.Column(db.String, unique=True)

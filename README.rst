@@ -17,3 +17,11 @@ Docker RUN
     # по расписанию парсит каждые 2 часа, можно поменять в файле /webapp/config.py
     $ docker-compose up
 
+
+Migration
+=========
+.. code-block:: text
+
+    $ flask db init
+    $ flask db migration -m ""
+    $ flask db update

@@ -53,3 +53,5 @@ def get_hotels():
 # @celery.task()
 # def task1():
 #     print("run task1")
+
+print("taskskasdfasdfpy")

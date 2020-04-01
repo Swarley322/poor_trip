@@ -6,11 +6,14 @@ services:
         image: selenium/standalone-chrome
         ports:
             - 4444:4444
-    worker:
+    webapp:
         build: .
         environment:
             - CELERY_BROKER_URL=redis://redis:6379
             - CELERY_RESULT_BACKEND=redis://redis:6379
+            - FLASK_APP=webapp 
+            - FLASK_ENV=development
+            - FLASK_APP_PORT=5000
         ports:
             - 5000:5000
         links:

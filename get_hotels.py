@@ -16,6 +16,7 @@ with app.app_context():
                            checkin.strftime("%d/%m/%Y"),
                            checkout.strftime("%d/%m/%Y"))
             checkin = checkout
+            print(f"{city} {_}/2 done")
         # city = "Нью-Йорк"
         # checkin = current_date + timedelta(days=1)
         # for _ in range(5):

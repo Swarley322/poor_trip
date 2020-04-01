@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, url_for, redirect
 from webapp.get_all_hotels import get_best_hotels
 from webapp.get_city import get_city_dict
-from webapp.model import db
+# from webapp.model import db
 from webapp.forms import Form
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 
 def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && FLASK_APP_PORT=5000 && flask run
@@ -45,3 +47,8 @@ def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && 
         return render_template("cards.html")
 
     return app
+
+
+app = create_app()
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)

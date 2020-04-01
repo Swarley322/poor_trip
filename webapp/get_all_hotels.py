@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.options import Options
 import re
 from sqlalchemy import or_
 from webapp.model import db, Hotel, AvgPriceReviews, City
+# from webapp import db
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
        "I46AdIM1gEaMIBiAEBmAEhuAEHyAEM2AEB6AEB-AELiAIBqAIDuAKs6O3yBcACAQ&sid="
