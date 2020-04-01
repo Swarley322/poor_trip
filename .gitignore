@@ -10,4 +10,3 @@ celerybeat-schedule.bak
 celerybeat-schedule.dir
 celerybeat-schedule.dat
 celeryd.pid
-migrations

@@ -1,11 +1,6 @@
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
-from webapp import db
+from flask_sqlalchemy import SQLAlchemy
 
-# app = create_app()
-# db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
-# db = SQLAlchemy()
+db = SQLAlchemy()
 
 
 class Hotel(db.Model):
