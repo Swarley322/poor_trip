@@ -39,9 +39,9 @@ def get_html(url):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
 
-    # capabilities = chrome_options.to_capabilities()
-    driver = webdriver.Chrome(options=chrome_options)
-    # driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
+    capabilities = chrome_options.to_capabilities()
+    # driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     driver.get(url)
     html = driver.page_source
     driver.close()
