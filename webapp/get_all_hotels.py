@@ -38,6 +38,8 @@ def get_url(city, checkcheckin, checkcheckout):
 def get_html(url):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
 
     capabilities = chrome_options.to_capabilities()
     # driver = webdriver.Chrome(options=chrome_options)
