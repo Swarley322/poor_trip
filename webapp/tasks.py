@@ -3,6 +3,7 @@ from webapp import create_app
 from datetime import datetime, timedelta
 from webapp.get_all_hotels import get_all_hotels
 from webapp.model import db, City
+from time import sleep
 
 current_date = datetime.now()
 app = create_app()
@@ -39,6 +40,11 @@ def get_hotels():
                            checkin.strftime("%d/%m/%Y"),
                            checkout.strftime("%d/%m/%Y"))
             checkin = checkout
+            sleep(5)
+        print(f"{city} done")
+        sleep(10)
+
+        
     # city = "Нью-Йорк"
     # checkin = current_date + timedelta(days=1)
     # for _ in range(2):
@@ -53,5 +59,3 @@ def get_hotels():
 # @celery.task()
 # def task1():
 #     print("run task1")
-
-print("taskskasdfasdfpy")
