@@ -45,7 +45,7 @@ def get_html(url):
     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     driver.get(url)
     html = driver.page_source
-    driver.close()
+    driver.quit()
     return html
 
 
