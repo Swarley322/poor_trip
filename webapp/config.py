@@ -1,5 +1,6 @@
 import os
 from celery.schedules import crontab
+from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -8,6 +9,8 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'webapp.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 CSRF_ENABLED = True
 SECRET_KEY = 'you-will-never-guess'
+
+REMEMBER_COOCKIE_DURATION = timedelta(days=7)
 
 # CELERY_BROKER_URL = 'redis://localhost:6379'
 # CELERY_RESULT_BACKEND = 'redis://localhost:6379'
@@ -20,12 +23,12 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERYBEAT_SCHEDULE = {
         "parsing": {
             "task": "webapp.tasks.get_hotels",
-            "schedule": crontab(minute="*/8"),
+            "schedule": crontab(minute="*/10"),
             "args": ()
         },
         "create_city_list": {
             "task": "webapp.tasks.create_city_list",
-            "schedule": crontab(minute=0, hour="*/4"),
+            "schedule": crontab(minute=0, hour=0),
             "args": ()
         }
 }

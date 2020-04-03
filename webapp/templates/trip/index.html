@@ -1,0 +1,22 @@
+{% extends"base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-6">
+        <h2>Hotels</h2>
+        {% for hotel in hotel_list %}
+            <h3><a href="{{ hotel.url }}">{{ hotel.hotel_name }}</a></h3>
+            <p>raiting - {{ hotel.rating }}</p>
+            <p>price - {{ hotel.price }} rub</p>
+            <p>{{ hotel.stars }}</p>
+            <img src="{{ hotel.img }}" width="200" height="150">
+            <hr />
+        {% endfor %}
+    </div>
+    <div class="col-6">
+        <h2>AirTickets</h2>
+    </div>
+</div>
+    
+
+{% endblock %}

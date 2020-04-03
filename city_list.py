@@ -1,6 +1,7 @@
 from googletrans import Translator
 from webapp import create_app
-from webapp.model import db, City
+from webapp.db import db
+from webapp.trip.models import City
 
 translator = Translator()
 
@@ -9,13 +10,20 @@ with app.app_context():
     PART_OF_THE_WORLD = {
             "Europe": {
                 "England": ["London"],
-                "Russia": ["Moscow"]
+                "Russia": ["Moscow", "Saint-Petersburg"],
+                "Germany": ["Berlin"],
+                "France": ["Paris"],
+                "Spain": ["Barcelona", "Madrid"]
                 },
             "Asia": {
-                "Japan": ["Tokyo"]
+                "Japan": ["Tokyo", "Kyoto"],
+                "South korea": ["Seoul"],
+                "China": ["Beijing", "Hong Kong"],
+                "Singapore": ["Singapore"]
                 },
             "America": {
-                "USA": ["New-York"]
+                "USA": ["New-York", "Las-Vegas"],
+                "Canada": ["Toronto"]
                 }
         }
 

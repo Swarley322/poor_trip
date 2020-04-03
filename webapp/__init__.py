@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, url_for, redirect
-from webapp.get_all_hotels import get_best_hotels
-from webapp.get_city import get_city_dict
-from webapp.model import db
-from webapp.forms import Form
+from flask import Flask
 from flask_migrate import Migrate
+from flask_login import LoginManager
+
+from webapp.db import db
+from webapp.user.models import User
+from webapp.user.views import blueprint as user_blueprint
+from webapp.admin.views import blueprint as admin_blueprint
+from webapp.trip.views import blueprint as trip_blueprint
 
 
 def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && FLASK_APP_PORT=5000 && flask run
@@ -12,38 +15,15 @@ def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && 
     db.init_app(app)
     migrate = Migrate(app, db)
 
-    @app.route('/', methods=["GET", "POST"])
-    def start():
-        form = Form()
-        if form.validate_on_submit():
-            city = request.form["city"].strip().capitalize()
-            checkin = request.form["checkin"].strip()
-            checkout = request.form["checkout"].strip()
-            money = request.form["money"]
-            # print(checkin)
-            # print(checkout)
-            return redirect(url_for("city", city=city, checkin=checkin, checkout=checkout, money=money))
-        return render_template('start.html', form=form)
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'user.login'
+    app.register_blueprint(user_blueprint)
+    app.register_blueprint(admin_blueprint)
+    app.register_blueprint(trip_blueprint)
 
-    @app.route('/city', methods=["GET", "POST"])
-    def city():
-        checkin = request.args["checkin"]
-        checkout = request.args["checkout"]
-        money = int(request.args["money"])
-        city_list = get_city_dict(money, checkin, checkout)
-        return render_template("cards2.html", city_list=city_list)
-
-    @app.route('/index')
-    def index():
-        city = request.args["city"]
-        checkin = request.args["checkin"]
-        checkout = request.args["checkout"]
-        money = int(request.args["money"])
-        hotel_list = get_best_hotels(city, checkin, checkout, money)
-        return render_template('index2.html', hotel_list=hotel_list)
-
-    @app.route('/cards')
-    def cards():
-        return render_template("cards.html")
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
 
     return app

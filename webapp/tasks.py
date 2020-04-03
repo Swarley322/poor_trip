@@ -1,8 +1,9 @@
 from celery import Celery
 from webapp import create_app
 from datetime import datetime, timedelta
-from webapp.get_all_hotels import get_all_hotels
-from webapp.model import db, City
+from webapp.trip.get_all_hotels import get_all_hotels
+from webapp.trip.models import City
+from webapp.db import db
 
 current_date = datetime.now()
 app = create_app()
@@ -59,8 +60,6 @@ def create_city_list():
                     f.write(checkin.strftime("%d/%m/%Y") + "\n")
                     f.write(checkout.strftime("%d/%m/%Y") + "\n")
                     checkin = checkout
-
-
 
 
 

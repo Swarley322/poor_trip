@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup as BS
 from selenium.webdriver.chrome.options import Options
 import re
 from sqlalchemy import or_
-from webapp.model import db, Hotel, AvgPriceReviews, City
+from webapp.db import db
+from webapp.trip.models import Hotel, AvgPriceReviews, City
 
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"

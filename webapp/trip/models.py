@@ -1,6 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from webapp.db import db
 
 
 class Hotel(db.Model):

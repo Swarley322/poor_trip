@@ -1,5 +1,5 @@
 from datetime import datetime
-from webapp.model import AvgPriceReviews
+from webapp.trip.models import AvgPriceReviews
 
 current_day = datetime.now().strftime("%Y-%m-%d")
 
