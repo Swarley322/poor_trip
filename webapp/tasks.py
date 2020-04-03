@@ -3,7 +3,6 @@ from webapp import create_app
 from datetime import datetime, timedelta
 from webapp.get_all_hotels import get_all_hotels
 from webapp.model import db, City
-from time import sleep
 
 current_date = datetime.now()
 app = create_app()
@@ -32,28 +31,37 @@ celery = make_celery(app)
 
 @celery.task()
 def get_hotels():
-    for city in City.query.all():
-        checkin = current_date + timedelta(days=1)
-        for _ in range(5):
-            checkout = checkin + timedelta(days=7)
-            get_all_hotels(city.ru_name,
-                           checkin.strftime("%d/%m/%Y"),
-                           checkout.strftime("%d/%m/%Y"))
-            checkin = checkout
-            sleep(5)
-        print(f"{city} done")
-        sleep(10)
+    with open("cities.txt", "r") as f:
+        data = f.read().splitlines(True)
+        if data:
+            f.seek(0)
+            city = f.readline().strip()
+            checkin = f.readline().strip()
+            checkout = f.readline().strip()
+            get_all_hotels(city, checkin, checkout)
+            print(f"{city} done")
+            with open("cities.txt", "w") as f2:
+                f2.writelines(data[3:])
+        else:
+            print("All cities has been parsed")
 
-        
-    # city = "Нью-Йорк"
-    # checkin = current_date + timedelta(days=1)
-    # for _ in range(2):
-    #     checkout = checkin + timedelta(days=7)
-    #     get_all_hotels(city,
-    #                     checkin.strftime("%d/%m/%Y"),
-    #                     checkout.strftime("%d/%m/%Y"))
-    #     checkin = checkout
-    #     print(f"{city} done")
+
+@celery.task()
+def create_city_list():
+    with app.app_context():
+        cities = [x.ru_name for x in City.query.all()]
+        with open("cities.txt", "w") as f:
+            for city in cities:
+                checkin = current_date + timedelta(days=1)
+                for _ in range(5):
+                    checkout = checkin + timedelta(days=7)
+                    f.write(city + "\n")
+                    f.write(checkin.strftime("%d/%m/%Y") + "\n")
+                    f.write(checkout.strftime("%d/%m/%Y") + "\n")
+                    checkin = checkout
+
+
+
 
 
 # @celery.task()

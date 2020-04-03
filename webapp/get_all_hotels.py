@@ -40,7 +40,6 @@ def get_html(url):
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-
     capabilities = chrome_options.to_capabilities()
     # driver = webdriver.Chrome(options=chrome_options)
     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)

@@ -18,9 +18,14 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 CELERY_TASK_SERIALIZER = 'json'
 
 CELERYBEAT_SCHEDULE = {
-        "tasker": {
+        "parsing": {
             "task": "webapp.tasks.get_hotels",
-            "schedule": crontab(minute=0, hour='*/2'),
+            "schedule": crontab(minute="*/8"),
+            "args": ()
+        },
+        "create_city_list": {
+            "task": "webapp.tasks.create_city_list",
+            "schedule": crontab(minute=0, hour="*/4"),
             "args": ()
         }
 }
