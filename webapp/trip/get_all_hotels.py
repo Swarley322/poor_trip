@@ -39,18 +39,16 @@ def get_url(city, checkcheckin, checkcheckout):
 
 
 def get_html(url):
-    # chrome_options = Options()
-    # chrome_options.add_argument('--headless')
-    firefox_options = FirefoxOptions()
-    firefox_options.add_argument('--headless')
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
     # chrome_options.add_argument('--no-sandbox')
     # chrome_options.add_argument('--disable-dev-shm-usage')
-    # capabilities = chrome_options.to_capabilities()
-    capabilities = firefox_options.to_capabilities()
+    capabilities = chrome_options.to_capabilities()
     # driver = webdriver.Chrome(options=chrome_options)
     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     driver.get(url)
     html = driver.page_source
+    # driver.close()
     driver.quit()
     return html
 
