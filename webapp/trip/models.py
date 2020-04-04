@@ -52,6 +52,11 @@ class City(db.Model):
     eng_country = db.Column(db.String)
     ru_country = db.Column(db.String)
     city_img = db.Column(db.String, nullable=True)
+    inexpensive_meal_price = db.Column(db.Float)
+    restaurant_2_persons = db.Column(db.Float)
+    water_033 = db.Column(db.Float)
+    one_way_ticket = db.Column(db.Float)
+    internet = db.Column(db.Float)
     hotels = db.relationship("Hotel", backref="city")
     avginfo = db.relationship("AvgPriceReviews", backref="city")
 

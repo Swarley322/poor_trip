@@ -1,7 +1,8 @@
 from webapp import create_app
-from webapp.get_all_hotels import get_all_hotels
+from webapp.trip.get_all_hotels import get_all_hotels
 from datetime import datetime, timedelta
-from webapp.model import City, db
+from webapp.db import db
+from webapp.trip.models import City
 
 current_date = datetime.now()
 app = create_app()

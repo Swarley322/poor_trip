@@ -5,19 +5,28 @@ current_day = datetime.now().strftime("%Y-%m-%d")
 
 
 def get_city_dict(money, checkin, checkout):
+    # days = int((checkout - checkin).days)
+    # week_number = int(checkin.strftime("%W"))
     days = int((datetime.strptime(checkout, "%d/%m/%Y") -
                 datetime.strptime(checkin, "%d/%m/%Y")).days)
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
-    citys = {
+    cities = {
         "Europe": {
             "England": [],
-            "Russia": []
+            "Russia": [],
+            "Germany": [],
+            "Spain": [],
+            "France": []
             },
         "Asia": {
-            "Japan": []
+            "Japan": [],
+            "South korea": [],
+            "China": [],
+            "Singapore": []
             },
         "America": {
-            "USA": []
+            "USA": [],
+            "Canada": []
             }
     }
     for city in AvgPriceReviews.query.filter(AvgPriceReviews.week_number == week_number) \
@@ -30,6 +39,6 @@ def get_city_dict(money, checkin, checkout):
                 "checkout": checkout,
                 "money": money
             }
-            citys[city.city.eng_part_of_the_world][city.city.eng_country].append(result)
-    return citys
+            cities[city.city.eng_part_of_the_world][city.city.eng_country].append(result)
+    return cities
 

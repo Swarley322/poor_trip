@@ -1,5 +1,5 @@
 test_file
-*.db
+# *.db
 __pycache__
 env
 .DS_store
