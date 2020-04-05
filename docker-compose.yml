@@ -3,7 +3,7 @@ services:
     redis:
         image: redis
     selenium:
-        image: selenium/standalone-chrome
+        image: selenium/standalone-chrome:3.141.59-20200326
         volumes:
             - /dev/shm:/dev/shm
         ports:
@@ -11,8 +11,8 @@ services:
     webapp:
         build: .
         environment:
-            - CELERY_BROKER_URL=redis://redis:6379
-            - CELERY_RESULT_BACKEND=redis://redis:6379
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            # - CELERY_RESULT_BACKEND=redis://redis:6379
             - FLASK_APP=webapp 
             - FLASK_ENV=development
             - FLASK_APP_PORT=5000

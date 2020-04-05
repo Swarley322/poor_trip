@@ -10,3 +10,4 @@ celerybeat-schedule.bak
 celerybeat-schedule.dir
 celerybeat-schedule.dat
 celeryd.pid
+create_cities_txt.py
