@@ -7,6 +7,7 @@ class Hotel(db.Model):
     city_id = db.Column(db.String, db.ForeignKey("City.id"))
     name = db.Column(db.String)
     week_price = db.Column(db.Integer, nullable=True)
+    avg_day_price = db.Column(db.Integer, nullable=True)
     checkin_date = db.Column(db.String)
     checkout_date = db.Column(db.String)
     hotel_link = db.Column(db.String)
@@ -44,7 +45,6 @@ class AvgPriceReviews(db.Model):
 class City(db.Model):
     __tablename__ = "City"
     id = db.Column(db.Integer, primary_key=True)
-    test_column = db.Column(db.Integer)
     eng_part_of_the_world = db.Column(db.String)
     ru_part_of_the_world = db.Column(db.String)
     eng_name = db.Column(db.String, unique=True)
@@ -53,10 +53,10 @@ class City(db.Model):
     ru_country = db.Column(db.String)
     city_img = db.Column(db.String, nullable=True)
     inexpensive_meal_price = db.Column(db.Float)
-    restaurant_2_persons = db.Column(db.Float)
-    water_033 = db.Column(db.Float)
-    one_way_ticket = db.Column(db.Float)
-    internet = db.Column(db.Float)
+    restaurant_2_persons = db.Column(db.Integer)
+    water_033 = db.Column(db.Integer)
+    one_way_ticket = db.Column(db.Integer)
+    internet = db.Column(db.Integer)
     hotels = db.relationship("Hotel", backref="city")
     avginfo = db.relationship("AvgPriceReviews", backref="city")
 

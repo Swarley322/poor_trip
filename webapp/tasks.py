@@ -1,11 +1,14 @@
 import os
+import time
 from celery import Celery
 from celery.schedules import crontab
-from webapp import create_app
 from datetime import datetime, timedelta
-from webapp.trip.get_all_hotels import get_all_hotels
-from webapp.trip.models import City
+
+from webapp import create_app
 from webapp.db import db
+from webapp.parser.booking import get_all_hotels
+from webapp.parser.live_prices import safe_city_prices
+from webapp.trip.models import City
 
 current_date = datetime.now()
 app = create_app()
@@ -69,10 +72,19 @@ def create_city_list():
                     checkin = checkout
 
 
+@celery.task()
+def get_live_prices():
+    for city in City.query.all():
+        with app.app_context():
+            safe_city_prices(city.eng_name)
+        time.sleep(20)
+
+
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(crontab(minute='*/12'), get_hotels.s())
     sender.add_periodic_task(crontab(minute=0, hours=0), create_city_list.s())
+    sender.add_periodic_task(crontab(minute=0, hours=1), get_live_prices.s())
 
 
 # @celery.task()

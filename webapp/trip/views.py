@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, request, url_for
 from webapp.trip.forms import StartForm
 from webapp.trip.get_city import get_city_dict
-from webapp.trip.get_all_hotels import get_best_hotels
+from webapp.parser.booking import get_best_hotels
 
 
 blueprint = Blueprint("trip", __name__)
