@@ -8,8 +8,6 @@ from sqlalchemy import or_
 from webapp.db import db
 from webapp.trip.models import Hotel, AvgPriceReviews, City
 
-from webapp.config import CHROMEDRIVER
-
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
        "I46AdIM1gEaMIBiAEBmAEhuAEHyAEM2AEB6AEB-AELiAIBqAIDuAKs6O3yBcACAQ&sid="
@@ -46,10 +44,9 @@ def get_html(url):
     # chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-extensions')
     chrome_options.add_argument('--disable-gpu')
-    # capabilities = chrome_options.to_capabilities()
-    driver = webdriver.Chrome(executable_path=CHROMEDRIVER, options=chrome_options)
+    capabilities = chrome_options.to_capabilities()
     # driver = webdriver.Chrome(options=chrome_options)
-    # driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
+    driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     driver.get(url)
     html = driver.page_source
     driver.close()
@@ -175,7 +172,7 @@ def get_all_hotels(city, checkin, checkout):
     pages = get_page_count(get_html(url))
     current_page_url = url
     for page in range(pages - 1):
-        print("Parsing process {:05.2f}%".format(page / (pages - 1) * 100))
+        print("Parsing process {}/{}/{} - {:05.2f}%".format(city, checkin, checkout, (page / (pages - 1) * 100)))
         html = get_html(current_page_url)
         get_hotel_information(html, city, checkin, checkout)
         current_page_url = get_next_page_href(html)
