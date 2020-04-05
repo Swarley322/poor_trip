@@ -15,8 +15,8 @@ app = create_app()
 db.init_app(app)
 
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 celery = Celery('tasks', broker=CELERY_BROKER_URL)
 # def make_celery(app):

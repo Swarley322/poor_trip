@@ -172,7 +172,7 @@ def get_all_hotels(city, checkin, checkout):
     pages = get_page_count(get_html(url))
     current_page_url = url
     for page in range(pages - 1):
-        print("Parsing process {}/{}/{} - {:05.2f}%".format(city, checkin, checkout, (page / (pages - 1) * 100)))
+        print("Parsing process {} - {} - {} - {:05.2f}%".format(city, checkin, checkout, (page / (pages - 1) * 100)))
         html = get_html(current_page_url)
         get_hotel_information(html, city, checkin, checkout)
         current_page_url = get_next_page_href(html)
