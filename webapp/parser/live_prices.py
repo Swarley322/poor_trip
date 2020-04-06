@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup as BS
 
 from webapp.db import db
 from webapp.trip.models import City
+from parser.booking import get_random_proxy
 
 
 def get_html(city):
@@ -10,8 +11,9 @@ def get_html(city):
     headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
         }
+    proxy = {"http": get_random_proxy()}
     try:
-        result = requests.get(url, headers=headers)
+        result = requests.get(url, headers=headers, proxies=proxy)
         result.raise_for_status()
         return result.text
     except(requests.RequestException, ValueError):

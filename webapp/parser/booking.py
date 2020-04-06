@@ -1,5 +1,7 @@
 import re
 import time
+import requests
+import random
 from bs4 import BeautifulSoup as BS
 from datetime import datetime
 from selenium import webdriver
@@ -38,22 +40,43 @@ def get_url(city, checkin_arg, checkout_arg):
     return url
 
 
+# def get_html(url):
+#     chrome_options = Options()
+#     chrome_options.add_argument('--headless')
+#     # chrome_options.add_argument('--no-sandbox')
+#     # chrome_options.add_argument('--disable-dev-shm-usage')
+#     chrome_options.add_argument('--disable-extensions')
+#     chrome_options.add_argument('--disable-gpu')
+#     capabilities = chrome_options.to_capabilities()
+#     # driver = webdriver.Chrome(options=chrome_options)
+#     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
+#     driver.get(url)
+#     # time.sleep(3)
+#     html = driver.page_source
+#     driver.close()
+#     driver.quit()
+#     return html
+def get_random_proxy():
+    proxy_list = [
+        "http://learn:python@t1.learn.python.ru:1080/",
+        "http://learn:python@t2.learn.python.ru:1080/",
+        "http://learn:python@t3.learn.python.ru:1080/"
+    ]
+    proxy = proxy_list[random.randint(0, 2)]
+    return proxy
+
+
 def get_html(url):
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    # chrome_options.add_argument('--no-sandbox')
-    # chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument('--disable-extensions')
-    chrome_options.add_argument('--disable-gpu')
-    capabilities = chrome_options.to_capabilities()
-    # driver = webdriver.Chrome(options=chrome_options)
-    driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
-    driver.get(url)
-    time.sleep(3)
-    html = driver.page_source
-    driver.close()
-    driver.quit()
-    return html
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
+        }
+    proxy = {"http": get_random_proxy()}
+    try:
+        result = requests.get(url, headers=headers, proxies=proxy)
+        return result.text
+    except(requests.RequestException, ValueError):
+        print('Сетевая ошибка')
+        return False
 
 
 def get_valid_value(value):
@@ -62,7 +85,8 @@ def get_valid_value(value):
 
 def get_hotel_information(html, city, checkin, checkout):
     soup = BS(html, 'html.parser')
-    hotels = soup.find('div', id='hotellist_inner').find_all('div', {'data-hotelid': re.compile('.*')})
+    # hotels = soup.find('div', id='hotellist_inner').find_all('div', {'data-hotelid': re.compile('.*')})
+    hotels = soup.find_all('div', {'data-hotelid': re.compile('.*')})
     for hotel in hotels:
         hotel_name = hotel.find('span', class_="sr-hotel__name").text.strip()
 
@@ -91,7 +115,6 @@ def get_hotel_information(html, city, checkin, checkout):
                                      .find('span', class_='invisible_spoken'))
         if stars:
             stars = stars.text.strip()
-        # print(hotel_name)
 
         safe_information(city, hotel_name, week_price, hotel_link, rating,
                          reviews, img_url, distance, stars, checkin, checkout)
@@ -176,12 +199,13 @@ def get_all_hotels(city, checkin, checkout):
     for page in range(pages - 1):
         try:
             html = get_html(current_page_url)
+            get_hotel_information(html, city, checkin, checkout)
+            current_page_url = get_next_page_href(html)
             print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, (page + 1), pages))
         except:
             print(f"Page {page + 1}/{pages} crashed")
             continue
-        get_hotel_information(html, city, checkin, checkout)
-        current_page_url = get_next_page_href(html)
+        time.sleep(3)
     city_id = City.query.filter(or_(City.ru_name == city.title(),
                                     City.eng_name == city.title())).first()
     avg_exist = db.session.query(
