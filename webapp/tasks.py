@@ -49,13 +49,10 @@ def get_hotels():
                 city = f.readline().strip()
                 checkin = f.readline().strip()
                 checkout = f.readline().strip()
-                try:
-                    get_all_hotels(city, checkin, checkout)
-                    print(f"{city} - {checkin} - {checkout} completed")
-                    with open("cities.txt", "w") as f2:
-                        f2.writelines(data[3:])
-                except:
-                    return "Parsing crashed"
+                get_all_hotels(city, checkin, checkout)
+                print(f"{city} - {checkin} - {checkout} completed")
+                with open("cities.txt", "w") as f2:
+                    f2.writelines(data[3:])
             else:
                 return "All cities has been parsed"
 

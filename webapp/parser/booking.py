@@ -174,10 +174,12 @@ def get_all_hotels(city, checkin, checkout):
     pages = get_page_count(get_html(url))
     current_page_url = url
     for page in range(pages - 1):
-        print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, page, (pages - 1)))
-        html = get_html(current_page_url)
-        if not html:
-            return None
+        try:
+            html = get_html(current_page_url)
+            print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, (page + 1), pages))
+        except:
+            print(f"Page {page + 1}/{pages} crashed")
+            continue
         get_hotel_information(html, city, checkin, checkout)
         current_page_url = get_next_page_href(html)
     city_id = City.query.filter(or_(City.ru_name == city.title(),
