@@ -1,4 +1,5 @@
 import re
+import time
 from bs4 import BeautifulSoup as BS
 from datetime import datetime
 from selenium import webdriver
@@ -40,7 +41,7 @@ def get_url(city, checkin_arg, checkout_arg):
 def get_html(url):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument('--no-sandbox')
     # chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-extensions')
     chrome_options.add_argument('--disable-gpu')
@@ -48,6 +49,7 @@ def get_html(url):
     # driver = webdriver.Chrome(options=chrome_options)
     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     driver.get(url)
+    time.sleep(5)
     html = driver.page_source
     driver.close()
     driver.quit()
@@ -172,8 +174,10 @@ def get_all_hotels(city, checkin, checkout):
     pages = get_page_count(get_html(url))
     current_page_url = url
     for page in range(pages - 1):
-        print("Parsing process {} - {} - {} - {:05.2f}%".format(city, checkin, checkout, (page / (pages - 1) * 100)))
+        print("Parsing process {} - {} - {} - {}/{}%".format(city, checkin, checkout, page, (pages - 1))
         html = get_html(current_page_url)
+        if not html:
+            return None
         get_hotel_information(html, city, checkin, checkout)
         current_page_url = get_next_page_href(html)
     city_id = City.query.filter(or_(City.ru_name == city.title(),

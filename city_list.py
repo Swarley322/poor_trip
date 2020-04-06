@@ -17,7 +17,7 @@ with app.app_context():
                 },
             "Asia": {
                 "Japan": ["Tokyo", "Kyoto"],
-                "South korea": ["Seoul"],
+                "South Korea": ["Seoul"],
                 "China": ["Beijing", "Hong Kong"],
                 "Singapore": ["Singapore"]
                 },
