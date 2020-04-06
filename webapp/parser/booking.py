@@ -49,7 +49,7 @@ def get_html(url):
     # driver = webdriver.Chrome(options=chrome_options)
     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     driver.get(url)
-    time.sleep(5)
+    time.sleep(3)
     html = driver.page_source
     driver.close()
     driver.quit()
@@ -174,7 +174,7 @@ def get_all_hotels(city, checkin, checkout):
     pages = get_page_count(get_html(url))
     current_page_url = url
     for page in range(pages - 1):
-        print("Parsing process {} - {} - {} - {}/{}%".format(city, checkin, checkout, page, (pages - 1))
+        print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, page, (pages - 1)))
         html = get_html(current_page_url)
         if not html:
             return None
