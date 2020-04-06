@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from webapp import create_app
 from webapp.db import db
-from webapp.parser.booking import get_all_hotels
+# from webapp.parser.booking import get_all_hotels
 from webapp.parser.live_prices import safe_city_prices
 from webapp.trip.models import City
 
@@ -15,28 +15,30 @@ app = create_app()
 db.init_app(app)
 
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
-celery = Celery('tasks', broker=CELERY_BROKER_URL)
-# def make_celery(app):
-#     celery = Celery(
-#         app.import_name,
-#         backend=app.config['CELERY_RESULT_BACKEND'],
-#         broker=app.config['CELERY_BROKER_URL']
-#         )
-#     celery.conf.update(app.config)
-
-#     class ContextTask(celery.Task):
-#         def __call__(self, *args, **kwargs):
-#             with app.app_context():
-#                 return self.run(*args, **kwargs)
-
-#     celery.Task = ContextTask
-#     return celery
+# celery = Celery('tasks', broker=CELERY_BROKER_URL)
 
 
-# celery = make_celery(app)
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
+        )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+
+celery = make_celery(app)
 
 
 @celery.task()

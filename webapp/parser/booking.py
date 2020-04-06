@@ -4,8 +4,8 @@ import requests
 import random
 from bs4 import BeautifulSoup as BS
 from datetime import datetime
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+# from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
 from sqlalchemy import or_
 
 from webapp.db import db
@@ -56,6 +56,7 @@ def get_url(city, checkin_arg, checkout_arg):
 #     driver.close()
 #     driver.quit()
 #     return html
+
 def get_random_proxy():
     proxy_list = [
         "http://learn:python@t1.learn.python.ru:1080/",
@@ -91,7 +92,6 @@ def get_hotel_information(html, city, checkin, checkout):
         hotel_name = hotel.find('span', class_="sr-hotel__name").text.strip()
 
         week_price = get_valid_value(hotel.find('div', class_="bui-price-display__value prco-inline-block-maker-helper"))
-        # print(week_price)
         if week_price:
             week_price = int(''.join([digit for digit in week_price.text.strip() if digit.isdigit()]))
 
