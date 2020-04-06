@@ -1,5 +1,7 @@
 import re
 import time
+import requests
+import random
 from bs4 import BeautifulSoup as BS
 from datetime import datetime
 # from selenium import webdriver
@@ -38,6 +40,7 @@ def get_url(city, checkin_arg, checkout_arg):
     )
     return url
 
+
 # def get_html(url):
 #     chrome_options = Options()
 #     chrome_options.add_argument('--headless')
@@ -56,18 +59,19 @@ def get_url(city, checkin_arg, checkout_arg):
 #     return html
 
 
+
 def get_valid_value(value):
     return value if value else None
 
 
 def get_hotel_information(html, city, checkin, checkout):
     soup = BS(html, 'html.parser')
-    hotels = soup.find('div', id='hotellist_inner').find_all('div', {'data-hotelid': re.compile('.*')})
+    # hotels = soup.find('div', id='hotellist_inner').find_all('div', {'data-hotelid': re.compile('.*')})
+    hotels = soup.find_all('div', {'data-hotelid': re.compile('.*')})
     for hotel in hotels:
         hotel_name = hotel.find('span', class_="sr-hotel__name").text.strip()
 
         week_price = get_valid_value(hotel.find('div', class_="bui-price-display__value prco-inline-block-maker-helper"))
-        # print(week_price)
         if week_price:
             week_price = int(''.join([digit for digit in week_price.text.strip() if digit.isdigit()]))
 
@@ -91,7 +95,6 @@ def get_hotel_information(html, city, checkin, checkout):
                                      .find('span', class_='invisible_spoken'))
         if stars:
             stars = stars.text.strip()
-        # print(hotel_name)
 
         safe_information(city, hotel_name, week_price, hotel_link, rating,
                          reviews, img_url, distance, stars, checkin, checkout)
@@ -183,7 +186,7 @@ def get_all_hotels(city, checkin, checkout):
             print(f"Page {page + 1}/{pages} crashed")
             continue
         time.sleep(3)
-        current_page_url = get_next_page_href(html)
+
     city_id = City.query.filter(or_(City.ru_name == city.title(),
                                     City.eng_name == city.title())).first()
     avg_exist = db.session.query(
