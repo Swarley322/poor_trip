@@ -1,24 +1,10 @@
-import requests
 from bs4 import BeautifulSoup as BS
 
 from webapp.db import db
 from webapp.trip.models import City
-from parser.booking import get_random_proxy
 
+from webapp.parser.utils import get_html
 
-def get_html(city):
-    url = f"https://www.numbeo.com/cost-of-living/in/{city}?displayCurrency=RUB"
-    headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
-        }
-    proxy = {"http": get_random_proxy()}
-    try:
-        result = requests.get(url, headers=headers, proxies=proxy)
-        result.raise_for_status()
-        return result.text
-    except(requests.RequestException, ValueError):
-        print('Сетевая ошибка')
-        return False
 
 
 def get_live_prices(html):
@@ -44,7 +30,8 @@ def get_live_prices(html):
 
 
 def safe_city_prices(city):
-    html = get_html(city)
+    url = f"https://www.numbeo.com/cost-of-living/in/{city}?displayCurrency=RUB"
+    html = get_html(url)
     prices = get_live_prices(html)
     update = City.query.filter_by(eng_name=city).first()
     update.inexpensive_meal_price = int(prices['Meal, Inexpensive Restaurant'])

@@ -79,7 +79,7 @@ def get_live_prices():
     for city in City.query.all():
         with app.app_context():
             safe_city_prices(city.eng_name)
-        time.sleep(20)
+        time.sleep(5)
 
 
 @celery.on_after_configure.connect

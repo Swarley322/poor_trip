@@ -10,6 +10,7 @@ from sqlalchemy import or_
 
 from webapp.db import db
 from webapp.trip.models import Hotel, AvgPriceReviews, City
+from webapp.parser.utils import get_html
 
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
@@ -51,33 +52,12 @@ def get_url(city, checkin_arg, checkout_arg):
 #     # driver = webdriver.Chrome(options=chrome_options)
 #     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
 #     driver.get(url)
-#     # time.sleep(3)
+#     time.sleep(3)
 #     html = driver.page_source
 #     driver.close()
 #     driver.quit()
 #     return html
 
-def get_random_proxy():
-    proxy_list = [
-        "http://learn:python@t1.learn.python.ru:1080/",
-        "http://learn:python@t2.learn.python.ru:1080/",
-        "http://learn:python@t3.learn.python.ru:1080/"
-    ]
-    proxy = proxy_list[random.randint(0, 2)]
-    return proxy
-
-
-def get_html(url):
-    headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
-        }
-    proxy = {"http": get_random_proxy()}
-    try:
-        result = requests.get(url, headers=headers, proxies=proxy)
-        return result.text
-    except(requests.RequestException, ValueError):
-        print('Сетевая ошибка')
-        return False
 
 
 def get_valid_value(value):
@@ -206,6 +186,7 @@ def get_all_hotels(city, checkin, checkout):
             print(f"Page {page + 1}/{pages} crashed")
             continue
         time.sleep(3)
+
     city_id = City.query.filter(or_(City.ru_name == city.title(),
                                     City.eng_name == city.title())).first()
     avg_exist = db.session.query(
