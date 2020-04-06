@@ -80,12 +80,12 @@ def get_live_prices():
     for city in City.query.all():
         with app.app_context():
             safe_city_prices(city.eng_name)
-        time.sleep(20)
+        time.sleep(5)
 
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(crontab(minute='*/8'), get_hotels.s())
+    sender.add_periodic_task(crontab(minute='*/1'), get_hotels.s())
     sender.add_periodic_task(crontab(minute=0, hours=0), create_city_list.s())
     sender.add_periodic_task(crontab(minute=0, hours=1), get_live_prices.s())
 

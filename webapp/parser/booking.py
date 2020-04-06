@@ -2,12 +2,13 @@ import re
 import time
 from bs4 import BeautifulSoup as BS
 from datetime import datetime
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+# from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
 from sqlalchemy import or_
 
 from webapp.db import db
 from webapp.trip.models import Hotel, AvgPriceReviews, City
+from webapp.parser.utils import get_html
 
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
@@ -37,23 +38,22 @@ def get_url(city, checkin_arg, checkout_arg):
     )
     return url
 
-
-def get_html(url):
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    # chrome_options.add_argument('--no-sandbox')
-    # chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument('--disable-extensions')
-    chrome_options.add_argument('--disable-gpu')
-    capabilities = chrome_options.to_capabilities()
-    # driver = webdriver.Chrome(options=chrome_options)
-    driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
-    driver.get(url)
-    time.sleep(3)
-    html = driver.page_source
-    driver.close()
-    driver.quit()
-    return html
+# def get_html(url):
+#     chrome_options = Options()
+#     chrome_options.add_argument('--headless')
+#     # chrome_options.add_argument('--no-sandbox')
+#     # chrome_options.add_argument('--disable-dev-shm-usage')
+#     chrome_options.add_argument('--disable-extensions')
+#     chrome_options.add_argument('--disable-gpu')
+#     capabilities = chrome_options.to_capabilities()
+#     # driver = webdriver.Chrome(options=chrome_options)
+#     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
+#     driver.get(url)
+#     time.sleep(3)
+#     html = driver.page_source
+#     driver.close()
+#     driver.quit()
+#     return html
 
 
 def get_valid_value(value):
@@ -174,11 +174,15 @@ def get_all_hotels(city, checkin, checkout):
     pages = get_page_count(get_html(url))
     current_page_url = url
     for page in range(pages - 1):
-        print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, page, (pages - 1)))
-        html = get_html(current_page_url)
-        if not html:
-            return None
-        get_hotel_information(html, city, checkin, checkout)
+        try:
+            html = get_html(current_page_url)
+            get_hotel_information(html, city, checkin, checkout)
+            current_page_url = get_next_page_href(html)
+            print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, (page + 1), pages))
+        except:
+            print(f"Page {page + 1}/{pages} crashed")
+            continue
+        time.sleep(3)
         current_page_url = get_next_page_href(html)
     city_id = City.query.filter(or_(City.ru_name == city.title(),
                                     City.eng_name == city.title())).first()

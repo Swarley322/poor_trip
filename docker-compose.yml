@@ -2,14 +2,16 @@ version: "2"
 services:
     redis:
         image: redis
-    selenium:
-        image: selenium/standalone-chrome:3.141.59-20200326
-        volumes:
-            - /dev/shm:/dev/shm
-        ports:
-            - 4444:4444
+        container_name: redis
+    # selenium:
+    #     image: selenium/standalone-chrome:3.141.59-20200326
+    #     volumes:
+    #         - /dev/shm:/dev/shm
+    #     ports:
+    #         - 4444:4444
     webapp:
         build: .
+        container_name: webapp
         environment:
             - CELERY_BROKER_URL=redis://redis:6379/0
             # - CELERY_RESULT_BACKEND=redis://redis:6379
@@ -20,7 +22,7 @@ services:
             - 5000:5000
         links:
             - redis
-            - selenium
+            # - selenium
         depends_on:
             - redis
-            - selenium
+            # - selenium
