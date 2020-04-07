@@ -1,9 +1,8 @@
 import re
 import time
-import requests
-import random
 from bs4 import BeautifulSoup as BS
 from datetime import datetime
+from pytz import timezone
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
 from sqlalchemy import or_
@@ -26,7 +25,7 @@ URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
        "no_rooms={rooms}&b_h4u_keep_filters=&from_sf=1")
 
 
-current_date = datetime.now().strftime('%Y-%m-%d')
+current_date = datetime.now(timezone("Europe/Moscow")).strftime('%Y-%m-%d')
 
 
 def get_url(city, checkin_arg, checkout_arg):
@@ -57,7 +56,6 @@ def get_url(city, checkin_arg, checkout_arg):
 #     driver.close()
 #     driver.quit()
 #     return html
-
 
 
 def get_valid_value(value):
@@ -174,13 +172,24 @@ def get_all_hotels(city, checkin, checkout):
     url = get_url(city, checkin, checkout)
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
-    pages = get_page_count(get_html(url))
-    current_page_url = url
+    try:
+        html = get_html(url)
+        if not html:
+            return "HTML doesn't returned"
+        pages = get_page_count(html)
+    except:
+        with open(f"errors/{city}-{week_number}.html", "w+") as f:
+            f.write(html)
+        return False
     for page in range(pages - 1):
         try:
-            html = get_html(current_page_url)
+            html = get_html(url)
+            if not html:
+                with open(f"errors/{city}-{week_number}-{page}.html", "w+") as f:
+                    f.write(html)
+                return False
             get_hotel_information(html, city, checkin, checkout)
-            current_page_url = get_next_page_href(html)
+            url = get_next_page_href(html)
             print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, (page + 1), pages))
         except:
             print(f"Page {page + 1}/{pages} crashed")
@@ -214,6 +223,7 @@ def get_all_hotels(city, checkin, checkout):
             year=year)
         )
         db.session.commit()
+    return True
 
 
 def get_best_hotels(city, checkin, checkout, money):

@@ -1,10 +1,8 @@
 from bs4 import BeautifulSoup as BS
 
 from webapp.db import db
-from webapp.trip.models import City
-
 from webapp.parser.utils import get_html
-
+from webapp.trip.models import City
 
 
 def get_live_prices(html):
