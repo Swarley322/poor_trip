@@ -1,7 +1,7 @@
 import time
-
-from pytz import timezone
 from datetime import datetime, timedelta
+from pytz import timezone
+
 from webapp.trip.models import City
 from webapp.parser.live_prices import safe_city_prices
 from webapp.parser.booking import get_all_hotels

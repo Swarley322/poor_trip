@@ -1,7 +1,7 @@
 import re
 import time
 from bs4 import BeautifulSoup as BS
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
@@ -26,6 +26,7 @@ URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
 
 
 current_date = datetime.now(timezone("Europe/Moscow")).strftime('%Y-%m-%d')
+yesterday_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
 def get_url(city, checkin_arg, checkout_arg):
@@ -172,25 +173,27 @@ def get_all_hotels(city, checkin, checkout):
     url = get_url(city, checkin, checkout)
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
-    try:
-        html = get_html(url)
-        if not html:
-            return "HTML doesn't returned"
-        pages = get_page_count(html)
-    except:
+    html = get_html(url)
+    if not html:
         with open(f"errors/{city}-{week_number}.html", "w+") as f:
             f.write(html)
         return False
+    try:
+        pages = get_page_count(html)
+    except:
+        print(f"HTML for pages, {city}-{checkin}-{checkout} doesn't returned")
+        return False
+    print(f"Parsing process {city} - {checkin} - {checkout} - started")
     for page in range(pages - 1):
         try:
             html = get_html(url)
             if not html:
                 with open(f"errors/{city}-{week_number}-{page}.html", "w+") as f:
                     f.write(html)
-                return False
+                print(f"HTML for page={page +1}/{pages}, {city}-{checkin}-{checkout} doesn't returned")
+                continue
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
-            print("Parsing process {} - {} - {} - {}/{}".format(city, checkin, checkout, (page + 1), pages))
         except:
             print(f"Page {page + 1}/{pages} crashed")
             continue
