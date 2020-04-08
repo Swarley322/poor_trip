@@ -20,7 +20,7 @@ def get_city_dict(money, checkin, checkout):
             },
         "Asia": {
             "Japan": [],
-            "South korea": [],
+            "South Korea": [],
             "China": [],
             "Singapore": []
             },

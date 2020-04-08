@@ -20,24 +20,24 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 # CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 # SCHEDULE = os.environ.get("SCHEDULE")
 
-CELERY_TASK_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
 
-CELERYBEAT_SCHEDULE = {
-        "parsing": {
-            "task": "webapp.tasks.get_hotels",
-            "schedule": crontab(minute="*/6"),
-            "args": ()
-        },
-        "create_city_list": {
-            "task": "webapp.tasks.create_city_list",
-            "schedule": crontab(minute=0, hour=0),
-            "args": ()
-        },
-        "get_live_proces": {
-            "task": "webapp.tasks.get_live_prices",
-            "schedule": crontab(minute=0, hour=1),
-            "args": ()
-        }
+# CELERYBEAT_SCHEDULE = {
+#         "parsing": {
+#             "task": "webapp.tasks.get_hotels",
+#             "schedule": crontab(minute="*/6"),
+#             "args": ()
+#         },
+#         "create_city_list": {
+#             "task": "webapp.tasks.create_city_list",
+#             "schedule": crontab(minute=0, hour=0),
+#             "args": ()
+#         },
+#         "get_live_proces": {
+#             "task": "webapp.tasks.get_live_prices",
+#             "schedule": crontab(minute=0, hour=1),
+#             "args": ()
+#         }
 }
 # CELERYBEAT_SCHEDULE = {
 #         "tasker": {

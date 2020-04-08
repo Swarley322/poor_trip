@@ -32,6 +32,7 @@
                 <div class="form-group">
                     {{ form.checkout.label }}
                     {{ form.checkout() }}
+
                     {% for error in form.checkout.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
