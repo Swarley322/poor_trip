@@ -41,4 +41,3 @@ def get_city_dict(money, checkin, checkout):
             }
             cities[city.city.eng_part_of_the_world][city.city.eng_country].append(result)
     return cities
-
