@@ -20,10 +20,11 @@ def get_hotels_task():
             checkout = f.readline().strip()
             hotels = get_all_hotels(city, checkin, checkout)
             if hotels:
-                with open("cities.txt", "r+") as f2:
+                with open("cities.txt", "r") as f2:
                     inner_data = f2.read().splitlines(True)
                     if inner_data:
-                        f2.writelines(data[3:])
+                        with open("cities.txt", "w") as f3:
+                            f3.writelines(data[3:])
                     else:
                         return "Cities has been deleted by clear TASK"
                 return f"{city} - {checkin} - {checkout} completed"
