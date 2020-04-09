@@ -4,7 +4,7 @@ from celery.schedules import crontab
 
 from webapp import create_app
 from webapp.db import db
-from webapp.task_funcs.tasks import get_hotels_task, create_city_list_task, get_live_prices_task
+from webapp.task_funcs.tasks import get_hotels_task, create_city_list_task, get_live_prices_task, clear_cities_txt_task
 
 app = create_app()
 db.init_app(app)
@@ -34,9 +34,15 @@ def get_live_prices():
         print(get_live_prices_task())
 
 
+@celery.task()
+def clear_cities_txt():
+    print(clear_cities_txt_task())
+
+
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(crontab(minute='*/5'), get_hotels.s())
+    sender.add_periodic_task(crontab(minute=59, hour=20), clear_cities_txt.s())
     sender.add_periodic_task(crontab(minute=1, hour=21), create_city_list.s())
     sender.add_periodic_task(crontab(minute=5, hour=21), get_live_prices.s())
 

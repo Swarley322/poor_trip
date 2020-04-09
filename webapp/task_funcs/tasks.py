@@ -49,3 +49,9 @@ def get_live_prices_task():
         safe_city_prices(city.eng_name)
         time.sleep(5)
     return f"Live prices - {current_date} parsed"
+
+
+def clear_cities_txt_task():
+    with open("cities.txt", "r+") as f:
+        f.truncate(0)
+    return f"Cities.txt erased {current_date}"

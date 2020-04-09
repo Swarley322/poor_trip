@@ -169,37 +169,54 @@ def get_next_page_href(html):
     return('https://www.booking.com' + href)
 
 
+def repeat_get_html(url):
+    html = get_html(url)
+    if not html:
+        return False
+    return html
+
+
 def get_all_hotels(city, checkin, checkout):
     url = get_url(city, checkin, checkout)
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
     html = get_html(url)
     if not html:
-        with open(f"errors/{city}-{week_number}.html", "w+") as f:
-            f.write(html)
-        return False
+        print("First HTML doesn't returned, requesting again")
+        html = get_html(url)
+        if not html:
+            print("First HTML doesn't returned at all")
+            return False
     try:
         pages = get_page_count(html)
     except Exception as e:
+        with open(f"errors/Pages for {city}-{checkin}.html", "w+") as f:
+            f.write(html)
         print(e)
         print(f"HTML for pages, {city}-{checkin}-{checkout} doesn't returned")
         return False
     print(f"Parsing process {city} - {checkin} - {checkout} - started")
+
     for page in range(pages - 1):
-        try:
+        html = get_html(url)
+        if not html:
+            print(f"HTML for {page + 1}/{pages} doesn't returned, requesting again")
             html = get_html(url)
             if not html:
-                with open(f"errors/{city}-{week_number}-{page}.html", "w+") as f:
-                    f.write(html)
-                print(f"HTML for page={page +1}/{pages}, {city}-{checkin}-{checkout} doesn't returned")
-                continue
+                print(f"HTML for {page + 1}/{pages}doesn't returned at all")
+                return False
+
+        try:
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
         except Exception as e:
+            with open(f"errors/Page {page + 1}/{pages}-{city}-{checkin}.html", "w+") as f:
+                f.write(html)
             print(e)
             print(f"Page {page + 1}/{pages} crashed, trying again")
             try:
                 print(f"Parsing page {page + 1}/{pages} again")
+                html = get_html(url)
                 get_hotel_information(html, city, checkin, checkout)
                 url = get_next_page_href(html)
             except Exception as e:
