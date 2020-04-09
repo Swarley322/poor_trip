@@ -181,7 +181,7 @@ def get_all_hotels(city, checkin, checkout):
     try:
         pages = get_page_count(html)
     except Exception as e:
-        print(e.message, e.args)
+        print(e)
         print(f"HTML for pages, {city}-{checkin}-{checkout} doesn't returned")
         return False
     print(f"Parsing process {city} - {checkin} - {checkout} - started")
@@ -196,14 +196,14 @@ def get_all_hotels(city, checkin, checkout):
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
         except Exception as e:
-            print(e.message, e.args)
+            print(e)
             print(f"Page {page + 1}/{pages} crashed, trying again")
             try:
                 print(f"Parsing page {page + 1}/{pages} again")
                 get_hotel_information(html, city, checkin, checkout)
                 url = get_next_page_href(html)
             except Exception as e:
-                print(e.message, e.args)
+                print(e)
                 print(f"Page {page + 1}/{pages} crashed, second TIME")
                 continue
         time.sleep(3)
