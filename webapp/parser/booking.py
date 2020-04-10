@@ -25,7 +25,7 @@ URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
        "no_rooms={rooms}&b_h4u_keep_filters=&from_sf=1")
 
 
-current_date = datetime.now(timezone("Europe/Moscow")).strftime('%Y-%m-%d')
+# current_date = datetime.now(timezone("Europe/Moscow")).strftime('%Y-%m-%d')
 yesterday_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
@@ -106,14 +106,14 @@ def safe_information(city, hotel_name, week_price, hotel_link, rating,
     city_id = City.query.filter(or_(City.ru_name == city.title(),
                                     City.eng_name == city.title())).first()
     hotel_exist = db.session.query(db.exists().where(Hotel.name == hotel_name)
-                                              .where(Hotel.parsing_date == current_date)
+                                              .where(Hotel.parsing_date == datetime.now(timezone("Europe/Moscow")))
                                               .where(Hotel.week_number == week_number)
                                               .where(Hotel.year == year)).scalar()
     if not hotel_exist:
         hotel = Hotel(
             name=hotel_name, week_price=week_price,
             checkin_date=checkin, checkout_date=checkout,
-            hotel_link=hotel_link, parsing_date=current_date,
+            hotel_link=hotel_link, parsing_date=datetime.now(timezone("Europe/Moscow")),
             rating=rating, reviews=reviews, stars=stars,
             distance_from_center=distance, img_url=img_url,
             week_number=week_number, city=city_id, year=year,
@@ -127,7 +127,7 @@ def get_avg_price(city_id, week_number, year):
     count_hotels = 0
     price = 0
     for hotel in Hotel.query.filter(Hotel.city_id == city_id) \
-                            .filter(Hotel.parsing_date == current_date) \
+                            .filter(Hotel.parsing_date == datetime.now(timezone("Europe/Moscow"))) \
                             .filter(Hotel.week_number == week_number) \
                             .filter(Hotel.year == year):
         if hotel.week_price:
@@ -140,7 +140,7 @@ def get_avg_reviews(city_id, week_number, year):
     count_hotels = 0
     reviews = 0
     for hotel in Hotel.query.filter(Hotel.city_id == city_id) \
-                            .filter(Hotel.parsing_date == current_date) \
+                            .filter(Hotel.parsing_date == datetime.now(timezone("Europe/Moscow"))) \
                             .filter(Hotel.week_number == week_number) \
                             .filter(Hotel.year == year):
         if hotel.reviews:
@@ -190,7 +190,7 @@ def get_all_hotels(city, checkin, checkout):
     try:
         pages = get_page_count(html)
     except Exception as e:
-        with open(f"errors/Pages for {city}-{checkin}.html", "w+") as f:
+        with open(f"errors/Pages for {city} - week={week_number}.html", "w") as f:
             f.write(html)
         print(e)
         print(f"HTML for pages, {city}-{checkin}-{checkout} doesn't returned")
@@ -210,7 +210,7 @@ def get_all_hotels(city, checkin, checkout):
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
         except Exception as e:
-            with open(f"errors/Page {page + 1}/{pages}-{city}-{checkin}.html", "w+") as f:
+            with open(f"errors/Page {page + 1}/{pages}-{city}-week={week_number}.html", "w") as f:
                 f.write(html)
             print(e)
             print(f"Page {page + 1}/{pages} crashed, trying again")
@@ -238,7 +238,7 @@ def get_all_hotels(city, checkin, checkout):
         x.avg_week_price = get_avg_price(city_id.id, week_number, year)
         x.avg_reviews = get_avg_reviews(city_id.id, week_number, year)
         x.avg_day_price = int(get_avg_price(city_id.id, week_number, year) / 7)
-        x.parsing_date = current_date
+        x.parsing_date = datetime.now(timezone("Europe/Moscow"))
         x.year = year
         db.session.commit()
     else:
@@ -247,7 +247,7 @@ def get_all_hotels(city, checkin, checkout):
             avg_reviews=get_avg_reviews(city_id.id, week_number, year),
             avg_week_price=get_avg_price(city_id.id, week_number, year),
             avg_day_price=int(get_avg_price(city_id.id, week_number, year) / 7),
-            parsing_date=current_date,
+            parsing_date=datetime.now(timezone("Europe/Moscow")),
             week_number=week_number,
             year=year)
         )
@@ -263,15 +263,15 @@ def get_best_hotels(city, checkin, checkout, money):
                             City.eng_name == city.title()
                             )).first().id
     avg_reviews = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id) \
-                                       .filter(AvgPriceReviews.parsing_date == current_date) \
+                                       .filter(AvgPriceReviews.parsing_date == datetime.now(timezone("Europe/Moscow"))) \
                                        .filter(AvgPriceReviews.year == year) \
                                        .first().avg_reviews
     # avg_day_price = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id) \
-    #                                      .filter(AvgPriceReviews.parsing_date == current_date) \
+    #                                      .filter(AvgPriceReviews.parsing_date == datetime.now(timezone("Europe/Moscow"))) \
     #                                      .filter(AvgPriceReviews.year == year) \
     #                                      .first().avg_day_price
     result = []
-    for hotel in Hotel.query.filter(Hotel.parsing_date == current_date) \
+    for hotel in Hotel.query.filter(Hotel.parsing_date == datetime.now(timezone("Europe/Moscow"))) \
                             .filter(Hotel.week_number == week_number) \
                             .filter(Hotel.year == year) \
                             .filter(Hotel.city_id == city_id):

@@ -3,14 +3,16 @@ from webapp import create_app
 from webapp.db import db
 from webapp.trip.models import City
 
+
 translator = Translator()
 
 app = create_app()
+
 with app.app_context():
     PART_OF_THE_WORLD = {
             "Europe": {
                 "England": ["London"],
-                "Russia": ["Moscow", "Saint-Petersburg"],
+                "Russia": ["Saint-Petersburg"],
                 "Germany": ["Berlin"],
                 "France": ["Paris"],
                 "Spain": ["Barcelona", "Madrid"]
@@ -26,7 +28,6 @@ with app.app_context():
                 "Canada": ["Toronto"]
                 }
         }
-
     for world_part, country_list in PART_OF_THE_WORLD.items():
         for country, city_list in country_list.items():
             for city in city_list:
