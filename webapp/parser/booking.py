@@ -104,6 +104,10 @@ def safe_information(city, hotel_name, week_price, hotel_link, rating,
     parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d-%m-%Y")
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
+    if week_price:
+        avg_day_price = int(week_price / 7)
+    else:
+        avg_day_price = None
     city_id = City.query.filter(or_(City.ru_name == city.title(),
                                     City.eng_name == city.title())).first()
     hotel_exist = db.session.query(db.exists().where(Hotel.name == hotel_name)
@@ -118,7 +122,7 @@ def safe_information(city, hotel_name, week_price, hotel_link, rating,
             rating=rating, reviews=reviews, stars=stars,
             distance_from_center=distance, img_url=img_url,
             week_number=week_number, city=city_id, year=year,
-            avg_day_price=int(week_price / 7)
+            avg_day_price=avg_day_price
         )
         db.session.add(hotel)
         db.session.commit()
@@ -181,12 +185,14 @@ def repeat_get_html(url):
 
 def get_all_hotels(city, checkin, checkout):
     parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d-%m-%Y")
-    url = get_url(city, checkin, checkout)
+    # url = get_url(city, checkin, checkout)
+    url = "https://www.booking.com/"
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
     html = get_html(url)
     if not html:
         print("First HTML doesn't returned, requesting again")
+        time.sleep(1)
         html = get_html(url)
         if not html:
             print("First HTML doesn't returned at all")
@@ -194,8 +200,8 @@ def get_all_hotels(city, checkin, checkout):
     try:
         pages = get_page_count(html)
     except Exception as e:
-        with open(f"errors/Pages for {city} - week={week_number}.html", "w") as f:
-            f.write(html)
+        # with open(f"errors/Pages for {city} - week={week_number}.html", "w") as f:
+        #     f.write(html)
         print(e)
         print(f"HTML for pages, {city}-{checkin}-{checkout} doesn't returned")
         return False
@@ -204,6 +210,7 @@ def get_all_hotels(city, checkin, checkout):
     for page in range(pages - 1):
         html = get_html(url)
         if not html:
+            time.sleep(1)
             print(f"HTML for {page + 1}/{pages} doesn't returned, requesting again")
             html = get_html(url)
             if not html:
@@ -214,11 +221,12 @@ def get_all_hotels(city, checkin, checkout):
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
         except Exception as e:
-            with open(f"errors/Page {page + 1}/{pages}-{city}-week={week_number}.html", "w") as f:
-                f.write(html)
+            # with open(f"errors/Page {page + 1}/{pages}-{city}-week={week_number}.html", "w") as f:
+            #     f.write(html)
             print(e)
             print(f"Page {page + 1}/{pages} crashed, trying again")
             try:
+                time.sleep(1)
                 print(f"Parsing page {page + 1}/{pages} again")
                 html = get_html(url)
                 get_hotel_information(html, city, checkin, checkout)
