@@ -59,8 +59,33 @@ class City(db.Model):
     internet = db.Column(db.Integer)
     hotels = db.relationship("Hotel", backref="city")
     avginfo = db.relationship("AvgPriceReviews", backref="city")
+    attractions = db.relationship("Attractions", backref="city")
 
     def __repr__(self):
         return f"""City information (name={self.ru_name},
                 country={self.ru_country},
                 part_of_the_world={self.ru_part_of_the_world}"""
+
+
+class Attractions(db.Model):
+    __tablename__ = "Attractions"
+    id = db.Column(db.Integer, primary_key=True)
+    city_id = db.Column(db.String, db.ForeignKey("City.id"))
+    name = db.Column(db.String, unique=True)
+    img_url = db.Column(db.String)
+    address = db.Column(db.String)
+    description = db.Column(db.String)
+    link = db.Column(db.String)
+
+    def __repr__(self):
+        return f"Attraction information (name={self.name}, link={link}"
+
+
+class Airport_Ids(db.Model):
+    __tablename__ = "Airport_Ids"
+    id = db.Column(db.Integer, primary_key=True)
+    city = db.Column(db.String, unique=True)
+    airport_id = db.Column(db.String, unique=True)
+
+    def __repr__(self):
+        return f"Airport id = {self.airport_id}"

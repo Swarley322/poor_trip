@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 
 
 class StartForm(FlaskForm):
-    city = StringField('City', render_kw={"class": "form-control"})
+    city = StringField('City outbound', render_kw={"class": "form-control"})
     checkin = DateTimeField('Checkin Date (mm/dd/yyyy)', format='%d/%m/%Y',
                             validators=[DataRequired()],
                             render_kw={"class": "form-control"})
