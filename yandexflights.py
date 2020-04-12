@@ -68,6 +68,8 @@ def arrival_time_visual(arrival_time):
 def get_data(html):
     tickets = [{}]
     soup = BeautifulSoup(html, 'html.parser')
+    # tickets opsoe detection
+    no_tickets = 0
     # Recommended tickets data
     try:
         tickets_recommended = soup.find("table", class_="cards_kb__table").find_all("tbody", class_="flight_list _init")
@@ -106,6 +108,7 @@ def get_data(html):
                 })
     except(AttributeError):
         print("No recommended tickets for this dates")
+        no_tickets = 1
 
     # Common tickets data
     try:
@@ -144,7 +147,10 @@ def get_data(html):
     except(AttributeError):
         print("No common tickets for this dates")
     del tickets[0]
-    return tickets
+    if no_tickets == 1:
+        return False
+    else:
+        return tickets
 
 
 print("Direct flights only")
