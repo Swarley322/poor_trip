@@ -50,7 +50,7 @@ def get_html():
 
 
 def price_visual(price):
-    price_visual = price.replace("\xa0", "").replace("\xa0Р", "")
+    price_visual = price.replace("\xa0", "").replace("\xa0Р", "").replace("Р", "")
     return price_visual
 
 
@@ -66,7 +66,7 @@ def arrival_time_visual(arrival_time):
 
 # Getting tickets prices
 def get_data(html):
-    tickets = []
+    tickets = [{}]
     soup = BeautifulSoup(html, 'html.parser')
     # Recommended tickets data
     try:
@@ -86,11 +86,11 @@ def get_data(html):
                 tickets.append({
                     "company": company_name.text,
                     "price": price_visual(price.text),
-                    "forward departue time": depatrue_time_forward.text,
-                    "forward arrival time": arrival_time_visual(arrival_time_forward.text),
-                    "forward flight daration": flight_daruation_visual(flight_daruation_forward.text),
-                    "forward airport origin and destination": airports_forward.text,
-                    "buy link": buy_link
+                    "forward_departue_time": depatrue_time_forward.text,
+                    "forward_arrival_time": arrival_time_visual(arrival_time_forward.text),
+                    "forward_flight_daration": flight_daruation_visual(flight_daruation_forward.text),
+                    "forward_airport_origin_and_destination": airports_forward.text,
+                    "buy_link": buy_link
                 })
             backward_tickets = tickets_data.find_all("tr", class_="flight_list__backward")
             for backward_data in backward_tickets:
@@ -98,11 +98,11 @@ def get_data(html):
                 arrival_time_backward = backward_data.find("td", class_="flight_list__arrival-time")
                 flight_daruation_backward = backward_data.find("td", class_="flight_list__flight-duration")
                 airports_backward = backward_data.find("div", class_="flight_list__airports")
-                tickets.append({
-                    "backward departue time": depatrue_time_backward.text,
-                    "backward arrival time": arrival_time_visual(arrival_time_backward.text),
-                    "backward flight duration": flight_daruation_visual(flight_daruation_backward.text),
-                    "backward aiport origin and destination": airports_backward.text
+                tickets[-1].update({
+                    "backward_departue_time": depatrue_time_backward.text,
+                    "backward_arrival_time": arrival_time_visual(arrival_time_backward.text),
+                    "backward_flight_duration": flight_daruation_visual(flight_daruation_backward.text),
+                    "backward_aiport_origin_and_destination": airports_backward.text
                 })
     except(AttributeError):
         print("No recommended tickets for this dates")
@@ -123,11 +123,11 @@ def get_data(html):
                 tickets.append({
                     "company": company_name.text,
                     "price": price_visual(price.text),
-                    "forward departue time": depatrue_time_forward.text,
-                    "forward arrival time": arrival_time_visual(arrival_time_forward.text),
-                    "forward flight daration": flight_daruation_visual(flight_daruation_forward.text),
-                    "forward airport origin and destination": airports_forward.text,
-                    "buy link": buy_link
+                    "forward_departue_time": depatrue_time_forward.text,
+                    "forward_arrival_time": arrival_time_visual(arrival_time_forward.text),
+                    "forward_flight_daration": flight_daruation_visual(flight_daruation_forward.text),
+                    "forward_airport_origin_and_destination": airports_forward.text,
+                    "buy_link": buy_link
                 })
             backward_tickets = tickets_data.find_all("tr", class_="flight_list__backward")
             for backward_data in backward_tickets:
@@ -135,14 +135,15 @@ def get_data(html):
                 arrival_time_backward = backward_data.find("td", class_="flight_list__arrival-time")
                 flight_daruation_backward = backward_data.find("td", class_="flight_list__flight-duration")
                 airports_backward = backward_data.find("div", class_="flight_list__airports")
-                tickets.append({
-                    "backward departue time": depatrue_time_backward.text,
-                    "backward arrival time": arrival_time_visual(arrival_time_backward.text),
-                    "backward flight duration": flight_daruation_visual(flight_daruation_backward.text),
-                    "backward aiport origin and destination": airports_backward.text
+                tickets[-1].update({
+                    "backward_departue_time": depatrue_time_backward.text,
+                    "backward_arrival_time": arrival_time_visual(arrival_time_backward.text),
+                    "backward_flight_duration": flight_daruation_visual(flight_daruation_backward.text),
+                    "backward_aiport_origin_and_destination": airports_backward.text
                 })
     except(AttributeError):
         print("No common tickets for this dates")
+    del tickets[0]
     return tickets
 
 
