@@ -227,6 +227,7 @@ def get_all_hotels(city, checkin, checkout):
     print(f"Parsing process {city} - {checkin} - {checkout} - started")
 
     for page in range(pages - 1):
+        print(f"page-{page + 1} parsing started {datetime.now()}")
         html = get_html(url)
         if not html:
             time.sleep(1)
@@ -254,6 +255,7 @@ def get_all_hotels(city, checkin, checkout):
                 print(e)
                 print(f"Page {page + 1}/{pages} crashed, second TIME")
                 continue
+        print(f"page {page + 1}/{pages} parsed  time={datetime.now()}")
         time.sleep(2)
 
     city_id = City.query.filter(or_(City.ru_name == city.title(),
