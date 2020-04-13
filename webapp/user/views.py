@@ -38,7 +38,7 @@ def process_login():
     return redirect(url_for('user.login'))
 
 
-@blueprint.route("register")
+@blueprint.route("/register")
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('trip.start'))

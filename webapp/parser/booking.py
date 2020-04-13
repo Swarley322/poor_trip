@@ -24,6 +24,26 @@ URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
        "{out_day}&group_adults={adults}&group_children={children}&"
        "no_rooms={rooms}&b_h4u_keep_filters=&from_sf=1")
 
+URL2 =("https://www.booking.com/searchresults.ru.html?aid=376376&label=bdot-hZ"
+       "BHoyX7oowYFZ8BpwaLIwS410902425028%3Apl%3Ata%3Ap1%3Ap22.590.000%3Aac%3A"
+       "ap%3Aneg%3Afi%3Atikwd-299974808121%3Alp9040938%3Ali%3Adec%3Adm%3Appccp"
+       "%3DUmFuZG9tSVYkc2RlIyh9Yf23yREhrOV9YczHwt1OUN4&lang=ru&sid=201994ecbd9"
+       "174dd1e493f1990dd086b&sb=1&sb_lp=1&src=index&src_elem=sb&error_url=htt"
+       "ps%3A%2F%2Fwww.booking.com%2Findex.ru.html%3Faid%3D376376%3Blabel%3Dbd"
+       "ot-hZBHoyX7oowYFZ8BpwaLIwS410902425028%253Apl%253Ata%253Ap1%253Ap22.59"
+       "0.000%253Aac%253Aap%253Aneg%253Afi%253Atikwd-299974808121%253Alp904093"
+       "8%253Ali%253Adec%253Adm%253Appccp%253DUmFuZG9tSVYkc2RlIyh9Yf23yREhrOV9"
+       "YczHwt1OUN4%3Bsid%3D201994ecbd9174dd1e493f1990dd086b%3Bsb_price_type%3"
+       "Dtotal%26%3B&ss={city}&is_ski_area=0&ssne=%D0%A2%"
+       "D0%BE%D0%BA%D0%B8%D0%BE&ssne_untouched=%D0%A2%D0%BE%D0%BA%D0%B8%D0%BE&"
+       "checkin_year={in_year}&checkin_month={in_month}&checkin_monthday={in_day}&checkout_year={out_year}"
+       "&checkout_month={out_month}&checkout_monthday={out_day}&group_adults={adults}&group_children={children}&"
+       "no_rooms={rooms}&b_h4u_keep_filters=&from_sf=1&ss_raw=Toron&ac_position=0&ac_"
+       "langcode=en&ac_click_type=b&dest_id=-574890&dest_type=city&iata=YTO&pla"
+       "ce_id_lat=43.652&place_id_lon=-79.381966&search_pageview_id=bea27c971c1"
+       "0001a&search_selected=true&search_pageview_id=bea27c971c10001a&ac_sugge"
+       "stion_list_length=5&ac_suggestion_theme_list_length=0")
+
 
 # current_date = datetime.now(timezone("Europe/Moscow")).strftime('%Y-%m-%d')
 yesterday_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -234,7 +254,7 @@ def get_all_hotels(city, checkin, checkout):
                 print(e)
                 print(f"Page {page + 1}/{pages} crashed, second TIME")
                 continue
-        time.sleep(3)
+        time.sleep(2)
 
     city_id = City.query.filter(or_(City.ru_name == city.title(),
                                     City.eng_name == city.title())).first()

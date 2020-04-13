@@ -13,7 +13,7 @@
             {% endif %}
         {% endwith %}
         <h1>Fill the form</h1>
-            <form action="/city" method="POST" novalidate>
+            <form action="{{ url_for('trip.city') }}" method="POST" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group">
                     {{ form.city.label }}

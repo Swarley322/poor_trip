@@ -3,6 +3,8 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
 
+from webapp.trip.models import Airport_Ids, City
+
 
 # Parameters
 inbounddate = "2020-05-10"  # Дата возвращения
@@ -18,61 +20,54 @@ adults_number = "1"  # Количество взрослых пассажиро�
 
 
 # Getting places IDs
-# def get_IDs():
-#     connection = sqlite3.connect("cities_ids.db")
-#     crsr = connection.cursor()
-#     crsr.execute("SELECT * FROM citiesids")
-#     ans = crsr.fetchall()  # making list of lists
-#     for city_name, city_id in ans:
-#         if city_name == city_out:
-#             fromID = city_id
-#         if city_name == city_in:
-#             toID = city_id
+def get_ids(city_out, city_in):
+    city_out_id = Airport_Ids.query.filter(Airport_Ids.city == city_out.title()).first()
+    city_in_id = Airport_Ids.query.filter(Airport_Ids.city == city_in.title()).first()
+    return {"city_out": city_out_id.airport_id, "city_in": city_in_id.airport_id}
+
+
+# def get_IDs(city_in, city_out):
+#     url = "https://avia.yandex.ru/city/mow/-moskva/"
+#     # chromedriver = "/Users/dmitrykim/projects/booking/chromedriver"
+#     options = webdriver.ChromeOptions()
+#     options.add_argument('--headless')
+#     browser = webdriver.Chrome(executable_path="/Users/dmitrykim/projects/booking/chromedriver", chrome_options=options)
+#     browser.get(url)
+#     # Filling origin place name
+#     city_origin = browser.find_element_by_name("fromName")
+#     city_origin.send_keys(Keys.BACK_SPACE*20)
+#     city_origin.send_keys(city_out)
+#     time.sleep(1)
+#     city_origin.send_keys(Keys.ENTER)
+#     # Filling destination place name
+#     city_destination = browser.find_element_by_name("toName")
+#     city_destination.send_keys(Keys.BACK_SPACE*20)
+#     city_destination.send_keys(city_in)
+#     time.sleep(1)
+#     city_destination.send_keys(Keys.ENTER)
+#     time.sleep(1)
+
+#     new_url = browser.current_url
+
+#     # Getting ID of origin city
+#     start_origin = new_url.find("fromId=") + len("fromId=")
+#     end_origin = new_url.find("&toId")
+#     fromID = new_url[start_origin:end_origin]
+#     # print(fromID)
+
+#     # Getting ID of destination city
+#     start_destination = new_url.find("toId=") + len("toId=")
+#     end_destination = new_url.find("&when")
+#     toID = new_url[start_destination:end_destination]
+#     browser.quit()
 #     return(fromID, toID)
 
 
-def get_IDs(city_in, city_out):
-    url = "https://avia.yandex.ru/city/mow/-moskva/"
-    # chromedriver = "/Users/dmitrykim/projects/booking/chromedriver"
-    options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
-    browser = webdriver.Chrome(executable_path="/Users/dmitrykim/projects/booking/chromedriver", chrome_options=options)
-    browser.get(url)
-    # Filling origin place name
-    city_origin = browser.find_element_by_name("fromName")
-    city_origin.send_keys(Keys.BACK_SPACE*20)
-    city_origin.send_keys(city_out)
-    time.sleep(1)
-    city_origin.send_keys(Keys.ENTER)
-    # Filling destination place name
-    city_destination = browser.find_element_by_name("toName")
-    city_destination.send_keys(Keys.BACK_SPACE*20)
-    city_destination.send_keys(city_in)
-    time.sleep(1)
-    city_destination.send_keys(Keys.ENTER)
-    time.sleep(1)
-
-    new_url = browser.current_url
-
-    # Getting ID of origin city
-    start_origin = new_url.find("fromId=") + len("fromId=")
-    end_origin = new_url.find("&toId")
-    fromID = new_url[start_origin:end_origin]
-    # print(fromID)
-
-    # Getting ID of destination city
-    start_destination = new_url.find("toId=") + len("toId=")
-    end_destination = new_url.find("&when")
-    toID = new_url[start_destination:end_destination]
-    browser.quit()
-    return(fromID, toID)
-
-
 def get_html(city_in, city_out, outbounddate, inbounddate, adults_number):
-    Ids = get_IDs(city_in, city_out)
+    ids = get_ids(city_out, city_in)
     url = ("https://avia.yandex.ru/search/result/?fromId="
-           + Ids[0] + "&fromName=" + city_out + "&toId="
-           + Ids[1] + "&toName=" + city_in + "&when="
+           + ids['city_in'] + "&fromName=" + city_out + "&toId="
+           + ids['city_out'] + "&toName=" + city_in + "&when="
            + outbounddate + "&return_date="
            + inbounddate + "&oneway=2&adult_seats=" + adults_number
            + "&children_seats0&infant_seats=0&klass=economy&fromBlock=FormSearch#tt=1,0,0,0,0,0")
@@ -105,7 +100,7 @@ def arrival_time_visual(arrival_time):
 
 # Getting tickets prices
 def get_data(html):
-    tickets = []
+    tickets = [{}]
     soup = BeautifulSoup(html, 'html.parser')
     # Recommended tickets data
     try:
@@ -125,11 +120,11 @@ def get_data(html):
                 tickets.append({
                     "company": company_name.text,
                     "price": price_visual(price.text),
-                    "forward departue time": depatrue_time_forward.text,
-                    "forward arrival time": arrival_time_visual(arrival_time_forward.text),
-                    "forward flight daration": flight_daruation_visual(flight_daruation_forward.text),
-                    "forward airport origin and destination": airports_forward.text,
-                    "buy link": buy_link
+                    "forward_departue_time": depatrue_time_forward.text,
+                    "forward_arrival_time": arrival_time_visual(arrival_time_forward.text),
+                    "forward_flight_daration": flight_daruation_visual(flight_daruation_forward.text),
+                    "forward_airport_origin_and_destination": airports_forward.text,
+                    "buy_link": buy_link
                 })
             backward_tickets = tickets_data.find_all("tr", class_="flight_list__backward")
             for backward_data in backward_tickets:
@@ -137,14 +132,14 @@ def get_data(html):
                 arrival_time_backward = backward_data.find("td", class_="flight_list__arrival-time")
                 flight_daruation_backward = backward_data.find("td", class_="flight_list__flight-duration")
                 airports_backward = backward_data.find("div", class_="flight_list__airports")
-                tickets.append({
-                    "backward departue time": depatrue_time_backward.text,
-                    "backward arrival time": arrival_time_visual(arrival_time_backward.text),
-                    "backward flight duration": flight_daruation_visual(flight_daruation_backward.text),
-                    "backward aiport origin and destination": airports_backward.text
+                tickets[-1].update({
+                    "backward_departue_time": depatrue_time_backward.text,
+                    "backward_arrival_time": arrival_time_visual(arrival_time_backward.text),
+                    "backward_flight_duration": flight_daruation_visual(flight_daruation_backward.text),
+                    "backward_aiport_origin_and_destination": airports_backward.text
                 })
     except(AttributeError):
-        print("No recommended tickets for this dates")
+        return False
 
     # Common tickets data
     try:
@@ -162,11 +157,11 @@ def get_data(html):
                 tickets.append({
                     "company": company_name.text,
                     "price": price_visual(price.text),
-                    "forward departue time": depatrue_time_forward.text,
-                    "forward arrival time": arrival_time_visual(arrival_time_forward.text),
-                    "forward flight daration": flight_daruation_visual(flight_daruation_forward.text),
-                    "forward airport origin and destination": airports_forward.text,
-                    "buy link": buy_link
+                    "forward_departue_time": depatrue_time_forward.text,
+                    "forward_arrival_time": arrival_time_visual(arrival_time_forward.text),
+                    "forward_flight_daration": flight_daruation_visual(flight_daruation_forward.text),
+                    "forward_airport_origin_and_destination": airports_forward.text,
+                    "buy_link": buy_link
                 })
             backward_tickets = tickets_data.find_all("tr", class_="flight_list__backward")
             for backward_data in backward_tickets:
@@ -174,13 +169,13 @@ def get_data(html):
                 arrival_time_backward = backward_data.find("td", class_="flight_list__arrival-time")
                 flight_daruation_backward = backward_data.find("td", class_="flight_list__flight-duration")
                 airports_backward = backward_data.find("div", class_="flight_list__airports")
-                tickets.append({
-                    "backward departue time": depatrue_time_backward.text,
-                    "backward arrival time": arrival_time_visual(arrival_time_backward.text),
-                    "backward flight duration": flight_daruation_visual(flight_daruation_backward.text),
-                    "backward aiport origin and destination": airports_backward.text
+                tickets[-1].update({
+                    "backward_departue_time": depatrue_time_backward.text,
+                    "backward_arrival_time": arrival_time_visual(arrival_time_backward.text),
+                    "backward_flight_duration": flight_daruation_visual(flight_daruation_backward.text),
+                    "backward_aiport_origin_and_destination": airports_backward.text
                 })
     except(AttributeError):
         print("No common tickets for this dates")
+    del tickets[0]
     return tickets
-
