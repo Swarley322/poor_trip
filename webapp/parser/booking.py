@@ -227,7 +227,7 @@ def get_all_hotels(city, checkin, checkout):
     print(f"Parsing process {city} - {checkin} - {checkout} - started")
 
     for page in range(pages - 1):
-        print(f"page-{page + 1} parsing started {datetime.now()}")
+        # print(f"page-{page + 1} parsing started {datetime.now()}")
         html = get_html(url)
         if not html:
             time.sleep(1)
@@ -241,8 +241,6 @@ def get_all_hotels(city, checkin, checkout):
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
         except Exception as e:
-            # with open(f"errors/Page {page + 1}/{pages}-{city}-week={week_number}.html", "w") as f:
-            #     f.write(html)
             print(e)
             print(f"Page {page + 1}/{pages} crashed, trying again")
             try:
@@ -255,7 +253,7 @@ def get_all_hotels(city, checkin, checkout):
                 print(e)
                 print(f"Page {page + 1}/{pages} crashed, second TIME")
                 continue
-        print(f"page {page + 1}/{pages} parsed  time={datetime.now()}")
+        # print(f"page {page + 1}/{pages} parsed  time={datetime.now()}")
         time.sleep(2)
 
     city_id = City.query.filter(or_(City.ru_name == city.title(),

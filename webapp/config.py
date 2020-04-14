@@ -3,9 +3,10 @@ from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-CHROMEDRIVER = os.path.join(basedir.replace('/webapp', ""), 'chromedriver')
+# CHROMEDRIVER = os.path.join(basedir.replace('/webapp', ""), 'chromedriver')
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'webapp.db')
+DATA_PATH = "database"
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', DATA_PATH, 'webapp.db')
 # SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 CSRF_ENABLED = True

@@ -10,9 +10,13 @@ with app.app_context():
         fields = ['name', 'id']
         cities = csv.DictReader(f, fields, delimiter=';')
         for city in cities:
-            new_id = Airport_Ids(
-                city=city['name'].strip(),
-                airport_id=city['id'].strip()
-            )
-            db.session.add(new_id)
-            db.session.commit()
+            id_exists = db.session.query(db.exists().where(Airport_Ids.city == city['name'])).scalar()
+            if not id_exists:
+                new_id = Airport_Ids(
+                    city=city['name'].strip(),
+                    airport_id=city['id'].strip()
+                )
+                db.session.add(new_id)
+                db.session.commit()
+            else:
+                continue

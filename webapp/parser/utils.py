@@ -16,11 +16,12 @@ def get_html(url):
     headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
         }
-    # proxy = {"http": get_random_proxy()}
+    proxy = {"http": get_random_proxy()}
     try:
-        # result = requests.get(url, headers=headers, proxies=proxy)
-        result = requests.get(url, headers=headers)
+        result = requests.get(url, headers=headers, proxies=proxy)
+        # result = requests.get(url, headers=headers)
         return result.text
     except(requests.RequestException, ValueError):
         print('Сетевая ошибка')
         return False
+
