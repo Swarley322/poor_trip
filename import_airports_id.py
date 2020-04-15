@@ -13,7 +13,7 @@ with app.app_context():
             id_exists = db.session.query(db.exists().where(Airport_Ids.city == city['name'])).scalar()
             if not id_exists:
                 new_id = Airport_Ids(
-                    city=city['name'].strip(),
+                    city=city['name'].lower().strip(),
                     airport_id=city['id'].strip()
                 )
                 db.session.add(new_id)

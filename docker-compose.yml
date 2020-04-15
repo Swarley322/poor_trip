@@ -9,22 +9,36 @@ services:
     #         - /dev/shm:/dev/shm
     #     ports:
     #         - 4444:4444
+    db:
+        environment: 
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        image: postgres
+        container_name: postgres
+        restart: always
+        ports:
+            - 5432:5432
+        volumes:
+            - ./test_volume:/var/lib/postgresql/data
+                
     webapp:
         build: .
         container_name: poor_trip
+        # command: ["./import.sh"]
         environment:
             - CELERY_BROKER_URL=redis://redis:6379/
             # - CELERY_RESULT_BACKEND=redis://redis:6379
-            - FLASK_APP=webapp 
+            - FLASK_APP=webapp
             - FLASK_ENV=development
             - FLASK_APP_PORT=5000
-        volumes:
-            - ./poor_trip_test_db:/app/database
         ports:
             - 5000:5000
         links:
             - redis
-            # - selenium
+            - db
+        #     # - selenium
         depends_on:
             - redis
+            - db
             # - selenium

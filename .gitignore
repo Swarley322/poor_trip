@@ -13,4 +13,5 @@ celeryd.pid
 create_cities_txt.py
 chromedriver
 database
+test_volume
 

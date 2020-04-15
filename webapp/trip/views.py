@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, flash, render_template, redirect, request, url_for
+from flask import Blueprint, flash, render_template, redirect, request, url_for, session, request
 
 from webapp.trip.forms import StartForm
 from webapp.trip.utils.get_affordable_cities import get_cities_dict
@@ -26,6 +26,9 @@ def start():
 
 @blueprint.route('/city', methods=["GET", "POST"])
 def city():
+    if request.method == 'GET':
+        return session['city']
+
     form = StartForm()
     title = "Your cities"
     if form.validate_on_submit():
@@ -33,8 +36,9 @@ def city():
         user_money = form.money.data
         checkin = form.checkin.data
         checkout = form.checkout.data
+        session['city'] = city
 
-        airports = Airport_Ids.query.filter(Airport_Ids.city == city.strip().title()).count()
+        airports = Airport_Ids.query.filter(Airport_Ids.city == city.strip()).count()
         if checkin > checkout or checkin == checkout or checkin < datetime.now():
             flash("Incorrect dates")
             return redirect(url_for('trip.start'))
