@@ -1,4 +1,4 @@
-version: "2"
+version: "2.3"
 services:
     redis:
         image: redis
@@ -21,11 +21,11 @@ services:
             - 5432:5432
         volumes:
             - ./test_volume:/var/lib/postgresql/data
-                
     webapp:
-        build: .
+        build:
+            context: .
+            target: webapp
         container_name: poor_trip
-        # command: ["./import.sh"]
         environment:
             - CELERY_BROKER_URL=redis://redis:6379/
             # - CELERY_RESULT_BACKEND=redis://redis:6379
@@ -35,10 +35,25 @@ services:
         ports:
             - 5000:5000
         links:
-            - redis
             - db
-        #     # - selenium
+            - redis
+            # - selenium
+        depends_on:
+            - db
+            - redis
+            # - selenium
+    celery:
+        build:
+            context: .
+            target: celery
+        container_name: celery
+        environment:
+            - CELERY_BROKER_URL=redis://redis:6379/
+            - FLASK_APP=webapp
+        links:
+            - redis
         depends_on:
             - redis
+            - webapp
             - db
-            # - selenium
+    

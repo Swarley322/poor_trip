@@ -4,8 +4,7 @@ from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-# SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/postgres_test'
-# SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@postgres:5432/postgres'
+# SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/poor_trip_test'
 SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@db/postgres'
 
 

@@ -9,7 +9,7 @@ from sqlalchemy import or_
 
 from webapp.db import db
 from webapp.trip.models import Hotel, AvgPriceReviews, City
-from webapp.parser.utils import get_html
+from webapp.parser.utils import get_html, get_random_sleep_time
 
 
 URL = ("https://www.booking.com/searchresults.ru.html?label=gen173nr-1FCAEogg"
@@ -114,42 +114,49 @@ def get_hotel_information(html, city, checkin, checkout):
                                      .find('span', class_='invisible_spoken'))
         if stars:
             stars = stars.text.strip()
-
         safe_information(city, hotel_name, week_price, hotel_link, rating,
                          reviews, img_url, distance, stars, checkin, checkout)
 
 
 def safe_information(city, hotel_name, week_price, hotel_link, rating,
                      reviews, img_url, distance, stars, checkin, checkout):
-    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d-%m-%Y")
+    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
     if week_price:
         avg_day_price = int(week_price / 7)
     else:
         avg_day_price = None
-    city_id = City.query.filter(or_(City.ru_name == city.title(),
-                                    City.eng_name == city.title())).first()
+    city_id = City.query.filter(or_(City.ru_name == city.lower(),
+                                    City.eng_name == city.lower())).first()
     hotel_exist = db.session.query(db.exists().where(Hotel.name == hotel_name)
                                               .where(Hotel.parsing_date == parsing_date)
                                               .where(Hotel.week_number == week_number)
                                               .where(Hotel.year == year)).scalar()
     if not hotel_exist:
         hotel = Hotel(
-            name=hotel_name, week_price=week_price,
-            checkin_date=checkin, checkout_date=checkout,
-            hotel_link=hotel_link, parsing_date=parsing_date,
-            rating=rating, reviews=reviews, stars=stars,
-            distance_from_center=distance, img_url=img_url,
-            week_number=week_number, city=city_id, year=year,
-            avg_day_price=avg_day_price
+            name=hotel_name,
+            week_price=week_price,
+            avg_day_price=avg_day_price,
+            checkin_date=checkin,
+            checkout_date=checkout,
+            hotel_link=hotel_link,
+            parsing_date=parsing_date,
+            rating=rating,
+            reviews=reviews,
+            stars=stars,
+            distance_from_center=distance,
+            img_url=img_url,
+            week_number=week_number,
+            city_id=city_id.id,
+            year=year
         )
         db.session.add(hotel)
         db.session.commit()
 
 
 def get_avg_price(city_id, week_number, year):
-    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d-%m-%Y")
+    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
     count_hotels = 0
     price = 0
     for hotel in Hotel.query.filter(Hotel.city_id == city_id) \
@@ -163,7 +170,7 @@ def get_avg_price(city_id, week_number, year):
 
 
 def get_avg_reviews(city_id, week_number, year):
-    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d-%m-%Y")
+    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
     count_hotels = 0
     reviews = 0
     for hotel in Hotel.query.filter(Hotel.city_id == city_id) \
@@ -204,14 +211,14 @@ def repeat_get_html(url):
 
 
 def get_all_hotels(city, checkin, checkout):
-    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d-%m-%Y")
+    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
     url = get_url(city, checkin, checkout)
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
     html = get_html(url)
     if not html:
         print("First HTML doesn't returned, requesting again")
-        time.sleep(1)
+        time.sleep(get_random_sleep_time())
         html = get_html(url)
         if not html:
             print("First HTML doesn't returned at all")
@@ -230,13 +237,12 @@ def get_all_hotels(city, checkin, checkout):
         # print(f"page-{page + 1} parsing started {datetime.now()}")
         html = get_html(url)
         if not html:
-            time.sleep(1)
+            time.sleep(get_random_sleep_time())
             print(f"HTML for {page + 1}/{pages} doesn't returned, requesting again")
             html = get_html(url)
             if not html:
                 print(f"HTML for {page + 1}/{pages}doesn't returned at all")
                 return False
-
         try:
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
@@ -244,7 +250,7 @@ def get_all_hotels(city, checkin, checkout):
             print(e)
             print(f"Page {page + 1}/{pages} crashed, trying again")
             try:
-                time.sleep(1)
+                time.sleep(get_random_sleep_time())
                 print(f"Parsing page {page + 1}/{pages} again")
                 html = get_html(url)
                 get_hotel_information(html, city, checkin, checkout)
@@ -254,10 +260,9 @@ def get_all_hotels(city, checkin, checkout):
                 print(f"Page {page + 1}/{pages} crashed, second TIME")
                 continue
         # print(f"page {page + 1}/{pages} parsed  time={datetime.now()}")
-        time.sleep(2)
-
-    city_id = City.query.filter(or_(City.ru_name == city.title(),
-                                    City.eng_name == city.title())).first()
+        time.sleep(get_random_sleep_time())
+    city_id = City.query.filter(or_(City.ru_name == city.lower(),
+                                    City.eng_name == city.lower())).first()
     avg_exist = db.session.query(
                     db.exists().where(AvgPriceReviews.city_id == city_id.id)
                                .where(AvgPriceReviews.week_number == week_number)
@@ -274,7 +279,7 @@ def get_all_hotels(city, checkin, checkout):
         db.session.commit()
     else:
         db.session.add(AvgPriceReviews(
-            city=city_id,
+            city_id=city_id.id,
             avg_reviews=get_avg_reviews(city_id.id, week_number, year),
             avg_week_price=get_avg_price(city_id.id, week_number, year),
             avg_day_price=int(get_avg_price(city_id.id, week_number, year) / 7),
@@ -284,5 +289,3 @@ def get_all_hotels(city, checkin, checkout):
         )
         db.session.commit()
     return True
-
-

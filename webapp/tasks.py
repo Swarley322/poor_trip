@@ -16,7 +16,7 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 celery = Celery('tasks', broker=CELERY_BROKER_URL)
 
 
-@celery.task(time_limit=359)
+@celery.task(time_limit=300)
 def get_hotels():
     with app.app_context():
         print(get_hotels_task())

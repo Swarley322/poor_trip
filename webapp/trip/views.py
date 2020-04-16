@@ -8,7 +8,7 @@ from webapp.trip.utils.get_attractions import get_attractions_list
 from webapp.trip.utils.get_recommended_hotels import get_best_hotels
 from webapp.trip.utils.get_tickets_prices import get_tickets_prices
 
-from webapp.trip.models import Airport_Ids
+from webapp.trip.models import AirportId
 
 
 # from webapp.trip.tickets import get_data, get_html
@@ -27,7 +27,10 @@ def start():
 @blueprint.route('/city', methods=["GET", "POST"])
 def city():
     if request.method == 'GET':
-        return session['city']
+        # return session['city'].title()
+        # return session['checkin'].strftime("%d/%m/%Y")
+        return session['checkout'].strftime("%d/%m/%Y")
+        # return session['money']
 
     form = StartForm()
     title = "Your cities"
@@ -36,15 +39,22 @@ def city():
         user_money = form.money.data
         checkin = form.checkin.data
         checkout = form.checkout.data
-        session['city'] = city
 
-        airports = Airport_Ids.query.filter(Airport_Ids.city == city.strip()).count()
-        if checkin > checkout or checkin == checkout or checkin < datetime.now():
-            flash("Incorrect dates")
-            return redirect(url_for('trip.start'))
-        if not airports:
+        airports = AirportId.query.filter(AirportId.city == city.lower().strip()).count()
+        if airports:
+            session['city'] = city.lower()
+        else:
             flash("Incorrect outbound city, please choose russian city with airport")
             return redirect(url_for('trip.start'))
+
+        if checkin > checkout or checkin == checkout or checkin <= datetime.now():
+            flash("Incorrect dates")
+            return redirect(url_for('trip.start'))
+        else:
+            session['checkin'] = checkin
+            session['checkout'] = checkout
+            session['money'] = user_money
+
 
         # tickets_price = get_tickets_prices(city.strip(), checkin.strftime("%d/%m/%Y")
         # money = user_money - int(tickets_price[0]["price"].replace("Р", ""))
@@ -57,10 +67,10 @@ def city():
 
 @blueprint.route('/index')
 def index():
-    city = request.args["city"]
-    checkin = request.args["checkin"]
-    checkout = request.args["checkout"]
-    money = int(request.args["money"])
+    city = session['city'].lower()
+    checkin = session["checkin"]
+    checkout = session["checkout"]
+    money = session["money"]
     hotel_list = get_best_hotels(city, checkin, checkout, money)
     attractions_list = get_attractions_list(city)
     # html = get_html(city, "Новосибирск", datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y-%m-%d"), datetime.strptime(checkout, "%d/%m/%Y").strftime("%Y-%m-%d"), "2")

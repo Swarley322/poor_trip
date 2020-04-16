@@ -3,7 +3,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
 
-from webapp.trip.models import Airport_Ids, City
+from webapp.trip.models import AirportId, City
 
 
 # Parameters
@@ -21,8 +21,8 @@ adults_number = "1"  # Количество взрослых пассажиро�
 
 # Getting places IDs
 def get_ids(city_out, city_in):
-    city_out_id = Airport_Ids.query.filter(Airport_Ids.city == city_out.title()).first()
-    city_in_id = Airport_Ids.query.filter(Airport_Ids.city == city_in.title()).first()
+    city_out_id = AirportId.query.filter(AirportId.city == city_out.title()).first()
+    city_in_id = AirportId.query.filter(AirportId.city == city_in.title()).first()
     return {"city_out": city_out_id.airport_id, "city_in": city_in_id.airport_id}
 
 

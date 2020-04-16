@@ -15,7 +15,7 @@
                         {% for city in cities %}
                             <div class="collapse" id="{{ country }}">
                                 <div class="card card-body">
-                                    <h6><a href="{{ url_for('trip.index') }}?city={{ city.name }}&checkin={{ city.checkin }}&checkout={{ city.checkout }}&money={{ city.money }}">{{ city.name }}</a> </h6>
+                                    <h6><a href="{{ url_for('trip.index') }}">{{ city.name }}</a> </h6>
                                     <p>price - {{ city.price }} rub</p>
                                     <hr />
                                 </div>

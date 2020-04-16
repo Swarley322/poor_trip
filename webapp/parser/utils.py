@@ -2,6 +2,10 @@ import random
 import requests
 
 
+def get_random_sleep_time():
+    return random.randint(0, 3)
+
+
 def get_random_proxy():
     proxy_list = [
         "http://learn:python@t1.learn.python.ru:1080/",
@@ -24,4 +28,3 @@ def get_html(url):
     except(requests.RequestException, ValueError):
         print('Сетевая ошибка')
         return False
-

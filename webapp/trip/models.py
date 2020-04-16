@@ -1,4 +1,5 @@
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSON
 
 from webapp.db import db
 
@@ -37,7 +38,7 @@ class Hotel(db.Model):
     checkin_date = db.Column(db.String)
     checkout_date = db.Column(db.String)
     hotel_link = db.Column(db.String)
-    parsing_date = db.Column(db.String)
+    parsing_date = db.Column(db.String)  # dd/mm/YYYY
     week_number = db.Column(db.Integer)
     rating = db.Column(db.Float, nullable=True)
     reviews = db.Column(db.Integer, nullable=True)
@@ -46,7 +47,7 @@ class Hotel(db.Model):
     img_url = db.Column(db.String, nullable=True)
     year = db.Column(db.Integer)
 
-    hotel = relationship("City", backref="hotels")
+    city = relationship("City", backref="hotels")
 
     def __repr__(self):
         return f"Hotel(city={self.city_id}, name={self.name}, week_price={self.week_price}"
@@ -62,11 +63,11 @@ class AvgPriceReviews(db.Model):
     avg_reviews = db.Column(db.Integer)
     avg_week_price = db.Column(db.Integer)
     avg_day_price = db.Column(db.Integer)
-    parsing_date = db.Column(db.String)
+    parsing_date = db.Column(db.String)  # dd/mm/YYYY
     week_number = db.Column(db.Integer)
     year = db.Column(db.Integer)
 
-    city = db.relationship("City", backref="avg_price")
+    city = relationship("City", backref="avg_price")
 
     def __repr__(self):
         return f"""AvgReviews(city={self.city_id},
@@ -75,7 +76,7 @@ class AvgPriceReviews(db.Model):
                 date={self.parsing_date}"""
 
 
-class Attractions(db.Model):
+class Attraction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     city_id = db.Column(
             db.Integer,
@@ -88,16 +89,41 @@ class Attractions(db.Model):
     description = db.Column(db.String)
     link = db.Column(db.String)
 
-    city = db.relationship("City", backref="attractions")
+    city = relationship("City", backref="attractions")
 
     def __repr__(self):
         return f"Attraction information (name={self.name}, link={link}"
 
 
-class Airport_Ids(db.Model):
+class AirportId(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     city = db.Column(db.String, unique=True)
     airport_id = db.Column(db.String, unique=True)
 
     def __repr__(self):
         return f"Airport id = {self.airport_id}"
+
+
+class Ticket(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    city_outbound_id = db.Column(
+            db.Integer,
+            db.ForeignKey("airport_id.id", ondelete="CASCADE"),
+            index=True
+    )
+    city_inbound_id = db.Column(
+            db.Integer,
+            db.ForeignKey("city.id", ondelete="CASCADE"),
+            index=True
+    )
+    outbound_date = db.Column(db.String)  # dd/mm/YYYY
+    inbound_date = db.Column(db.String)  # dd/mm/YYYY
+    departure_date = db.Column(db.String)  # dd/mm/YYYY
+    arriving_date = db.Column(db.String)  # dd/mm/YYYY
+    price = db.Column(JSON)
+
+    city_outbound = relationship("AirportId", backref="ticket")
+    city_inbound = relationship("City", backref="ticket")
+
+    def __repr__(self):
+        return f""

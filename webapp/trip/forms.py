@@ -5,11 +5,11 @@ from wtforms.validators import DataRequired
 
 class StartForm(FlaskForm):
     city = StringField('City outbound', render_kw={"class": "form-control"})
-    checkin = DateTimeField('Checkin Date (mm/dd/yyyy)', format='%d/%m/%Y',
+    checkin = DateTimeField('Checkin Date (dd/mm/yyyy)', format='%d/%m/%Y',
                             validators=[DataRequired()],
                             render_kw={"class": "form-control"})
     dt = DateTimeField('Pick a Date', format="%m/%d/%Y")
-    checkout = DateTimeField('Chekout Date (mm/dd/yyyy)', format='%d/%m/%Y',
+    checkout = DateTimeField('Chekout Date (dd/mm/yyyy)', format='%d/%m/%Y',
                              validators=[DataRequired()],
                              render_kw={"class": "form-control"})
     money = IntegerField('Money',
