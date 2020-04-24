@@ -5,7 +5,7 @@ RUN (do not use)
     $ python3 -m venv env
     $ source env/bin/activate
     $ pip install -r requirements.txt
-    $ flask db upgrade   
+    $ export FLASK_APP=webapp && flask db upgrade   
     $ python import_cities.py
     $ python import_attractions.py
     $ python import_airports_id.py

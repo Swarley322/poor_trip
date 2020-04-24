@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+{% extends"base.html" %}
+{% block content %}
+
+<html>
+    <body>
+        <p style="font-size:20px ">
+            <img border="0" src="http://down.699pic.com/element/40028/4927.png?_upt=6de5ffdf1587135180&_upd=Lovepik_com-400284927-vector-cartoon-earth.png" alt="Logo" width="100" height="75" />
+            𝓟𝓸𝓸𝓻𝓣𝓻𝓲𝓹
+        </p>
+    </body>
+
+<style>
+body {
+background-image: url('https://cdn.oboi7.com/9f3c63a73eea7d71d45c73870b715c66c61022d4/minimalistichnyj-belyj-prostoj-fon.jpg');
+background-repeat: no-repeat;
+background-attachment: fixed;
+background-size: cover;
+}
+</style>
+
+<div class="bs-example">
+<ul class="nav nav-tabs">
+<li class="nav-item">
+<a href="#airtickets" class="nav-link active" data-toggle="tab">AirTickets</a>
+</li>
+<li class="nav-item">
+<a href="#hotels" class="nav-link" data-toggle="tab">Hotels</a>
+</li>
+<li class="nav-item">
+<a href="#attractions" class="nav-link" data-toggle="tab">Attractions</a>
+</li>
+</ul>
+
+
+<div class="tab-content">
+<div class="tab-pane fade show active" id="airtickets">
+<div style="background-image: url('');">
+<center><h2 id="airtickets">AirTickets</h2></center>
+<hr style="height:2px;border-width:0;color:gray;background-color:gray">
+{% for ticket in tickets_data %}
+<div class="row">
+    <div class="col-md-2">
+{% if ticket.forward.logo_url and ticket.forward.company %}
+<p><img src="{{ ticket.forward.logo_url }}" width="200" height="150">{{ticket.forward.company}}</p>
+{% endif %}
+<br>
+{% if ticket.backward.logo_url and ticket.backward.company %}}
+<p><img src="{{ ticket.backward.logo_url }}" width="200" height="150">{{ticket.backward.company}}</p>
+{% endif %}
+    </div>
+    <div class="col-md-2">
+{% if ticket.forward.departure_time %}
+<p>{{ticket.forward.departure_time}}</p>
+{% endif %}
+<br>
+<br>
+{% if ticket.backward.departure_time %}
+<p>{{ticket.backward.departure_time}}</p>
+{% endif %}
+    </div>
+    <div class="col-md-2">
+{% if ticket.forward.flight_duration %}
+<p>{{ticket.forward.flight_duration}}</p>
+{% endif %}
+<br>
+<br>
+<p>{{ticket.backward.flight_duration}}</p>
+    </div>
+    <div class="col-md-2">
+{% if ticket.forward.arrival_time %}
+<p>{{ticket.forward.arrival_time}}</p>
+{% endif %}
+{% if ticket.forward.arrival_date %}
+<p style="font-size:50%;">{{ticket.forward.arrival_date}}</p>
+{% endif %}
+<br>
+<br>
+{% if ticket.backward.arrival_time %}
+<p>{{ticket.backward.arrival_time}}</p>
+{% endif %}
+{% if ticket.backward.arrival_date %}
+<p style="font-size:50%;">{{ticket.backward.arrival_date}}</p>
+{% endif %}
+    </div>
+    <div class="col-md-2">
+{% if ticket.forward.airports %}
+<p>{{ticket.forward.airports}}</p>
+{% endif %}
+{% if ticket.forward.transfer_city %}
+<p style="font-size:50%;">{{ticket.forward.transfer_city}}</p>
+{% endif %}
+<br>
+<br>
+{% if ticket.backward.airports %}
+<p>{{ticket.backward.airports}}</p>
+{% endif %}
+{% if ticket.backward.transfer_city%}
+<p style="font-size:50%;">{{ticket.backward.transfer_city}}</p>
+{% endif %}
+    </div>
+    <div class="col-md-2">
+        <center>
+<p>{{ticket.price}} rub</p>
+<p>{{ticket.luggage}}</p>
+<button type="button" class="btn btn-success">Buy ticket</button>
+        </center>
+    </div>
+</div>
+<hr style="height:2px;border-width:0;color:gray;background-color:gray">
+{% endfor %}
+
+</div>
+</div>
+
+
+
+<div class="tab-pane fade" id="hotels">
+<center>
+<h2 class="mt-2">Hotels</h2>
+</center>
+{% for hotel in hotel_list %}
+<center>
+    <h3><a href="{{ hotel.url }}">{{ hotel.name }}</a></h3>
+    <img src="{{ hotel.img }}" width="200" height="150">
+    <p>raiting: {{ hotel.rating }}</p>
+    <p>price: {{ hotel.price }} rub</p>
+    <p>Stars: {{ hotel.stars }}</p>
+    <hr />
+</center>
+{% endfor %}
+</div>
+
+
+<div class="tab-pane fade" id="attractions">
+<center><h2 id="attractions">Attractions</h2></center>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+</html>

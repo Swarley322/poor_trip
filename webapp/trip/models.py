@@ -71,7 +71,7 @@ class AvgPriceReviews(db.Model):
 
     def __repr__(self):
         return f"""AvgReviews(city={self.city_id},
-                avg_price={self.avg_price},
+                avg_day_price={self.avg_day_price},
                 avg_reviews={self.avg_reviews},
                 date={self.parsing_date}"""
 
@@ -118,9 +118,10 @@ class Ticket(db.Model):
     )
     outbound_date = db.Column(db.String)  # dd/mm/YYYY
     inbound_date = db.Column(db.String)  # dd/mm/YYYY
-    departure_date = db.Column(db.String)  # dd/mm/YYYY
-    arriving_date = db.Column(db.String)  # dd/mm/YYYY
-    price = db.Column(JSON)
+#     departure_date = db.Column(db.String)  # dd/mm/YYYY
+#     arriving_date = db.Column(db.String)  # dd/mm/YYYY
+    parsing_date = db.Column(db.String)
+    price = db.Column(JSON, nullable=True)
 
     city_outbound = relationship("AirportId", backref="ticket")
     city_inbound = relationship("City", backref="ticket")

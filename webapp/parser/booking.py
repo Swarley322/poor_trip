@@ -3,6 +3,7 @@ import time
 from bs4 import BeautifulSoup as BS
 from datetime import datetime, timedelta
 from pytz import timezone
+from statistics import median
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
 from sqlalchemy import or_
@@ -157,16 +158,14 @@ def safe_information(city, hotel_name, week_price, hotel_link, rating,
 
 def get_avg_price(city_id, week_number, year):
     parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
-    count_hotels = 0
-    price = 0
+    price = []
     for hotel in Hotel.query.filter(Hotel.city_id == city_id) \
                             .filter(Hotel.parsing_date == parsing_date) \
                             .filter(Hotel.week_number == week_number) \
                             .filter(Hotel.year == year):
         if hotel.week_price:
-            price += int(hotel.week_price)
-            count_hotels += 1
-    return int(price / count_hotels)
+            price.append(int(hotel.week_price))
+    return int(median(price))
 
 
 def get_avg_reviews(city_id, week_number, year):
@@ -262,27 +261,27 @@ def get_all_hotels(city, checkin, checkout):
         # print(f"page {page + 1}/{pages} parsed  time={datetime.now()}")
         time.sleep(get_random_sleep_time())
     city_id = City.query.filter(or_(City.ru_name == city.lower(),
-                                    City.eng_name == city.lower())).first()
+                                    City.eng_name == city.lower())).first().id
     avg_exist = db.session.query(
-                    db.exists().where(AvgPriceReviews.city_id == city_id.id)
+                    db.exists().where(AvgPriceReviews.city_id == city_id)
                                .where(AvgPriceReviews.week_number == week_number)
                                .where(AvgPriceReviews.year == year)).scalar()
     if avg_exist:
-        x = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id.id) \
+        x = AvgPriceReviews.query.filter(AvgPriceReviews.city_id == city_id) \
                                  .filter(AvgPriceReviews.week_number == week_number) \
                                  .filter(AvgPriceReviews.year == year).first()
-        x.avg_week_price = get_avg_price(city_id.id, week_number, year)
-        x.avg_reviews = get_avg_reviews(city_id.id, week_number, year)
-        x.avg_day_price = int(get_avg_price(city_id.id, week_number, year) / 7)
+        x.avg_week_price = get_avg_price(city_id, week_number, year)
+        x.avg_reviews = get_avg_reviews(city_id, week_number, year)
+        x.avg_day_price = int(get_avg_price(city_id, week_number, year) / 7)
         x.parsing_date = parsing_date
         x.year = year
         db.session.commit()
     else:
         db.session.add(AvgPriceReviews(
-            city_id=city_id.id,
-            avg_reviews=get_avg_reviews(city_id.id, week_number, year),
-            avg_week_price=get_avg_price(city_id.id, week_number, year),
-            avg_day_price=int(get_avg_price(city_id.id, week_number, year) / 7),
+            city_id=city_id,
+            avg_reviews=get_avg_reviews(city_id, week_number, year),
+            avg_week_price=get_avg_price(city_id, week_number, year),
+            avg_day_price=int(get_avg_price(city_id, week_number, year) / 7),
             parsing_date=parsing_date,
             week_number=week_number,
             year=year)

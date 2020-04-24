@@ -1,38 +1,151 @@
 {% extends"base.html" %}
-
 {% block content %}
-<div class="row">
-    <div class="col-4">
-        <h2>Hotels</h2>
-        {% for hotel in hotel_list %}
-            <h3><a href="{{ hotel.url }}">{{ hotel.hotel_name }}</a></h3>
-            <p>raiting - {{ hotel.rating }}</p>
-            <p>price - {{ hotel.price }} rub</p>
-            <p>{{ hotel.stars }}</p>
-            <img src="{{ hotel.img }}" width="200" height="150">
-            <hr />
-        {% endfor %}
+
+<style>
+body {
+background-image: url('https://wallup.net/wp-content/uploads/2017/11/23/519496-desert-Moon-stars-night-minimalism-dunes-artwork.jpg');
+background-repeat: no-repeat;
+background-attachment: fixed;
+background-size: cover;
+}
+</style>
+
+<div class="bs-example">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a href="#airtickets" class="nav-link active" data-toggle="tab">AirTickets</a>
+        </li>
+        <li class="nav-item">
+            <a href="#hotels" class="nav-link" data-toggle="tab">Hotels</a>
+        </li>
+        <li class="nav-item">
+            <a href="#attractions" class="nav-link" data-toggle="tab">Attractions</a>
+        </li>
+</ul>
+
+
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="airtickets">
+        <div style="background-image: url('');">
+        <center><h2 id="airtickets">AirTickets</h2></center>
+        <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+            {% for ticket in tickets_data %}
+            <div class="row">
+                <div class="col-md-2">
+            {% if ticket.forward.logo_url and ticket.forward.company %}
+            <p><img src="{{ ticket.forward.logo_url }}" width="50" height="50">{{ticket.forward.company}}</p>
+            {% endif %}
+            <br>
+            {% if ticket.backward.logo_url and ticket.backward.company %}
+            <p><img src="{{ ticket.backward.logo_url }}" width="50" height="50">{{ticket.backward.company}}</p>
+            {% endif %}
+                </div>
+                <div class="col-md-2">
+            {% if ticket.forward.departure_time %}
+            <p>{{ticket.forward.departure_time}}</p>
+            {% endif %}
+            <br>
+            <br>
+            {% if ticket.backward.departure_time %}
+            <p>{{ticket.backward.departure_time}}</p>
+            {% endif %}
+                </div>
+                <div class="col-md-2">
+            {% if ticket.forward.flight_duration %}
+            <p>{{ticket.forward.flight_duration}}</p>
+            {% endif %}
+            <br>
+            <br>
+            <p>{{ticket.backward.flight_duration}}</p>
+                </div>
+                <div class="col-md-2">
+            {% if ticket.forward.arrival_time %}
+            <p>{{ticket.forward.arrival_time}}</p>
+            {% endif %}
+            {% if ticket.forward.arrival_date %}
+            <p style="font-size:50%;">{{ticket.forward.arrival_date}}</p>
+            {% endif %}
+            <br>
+            <br>
+            {% if ticket.backward.arrival_time %}
+            <p>{{ticket.backward.arrival_time}}</p>
+            {% endif %}
+            {% if ticket.backward.arrival_date %}
+            <p style="font-size:50%;">{{ticket.backward.arrival_date}}</p>
+            {% endif %}
+                </div>
+                <div class="col-md-2">
+            {% if ticket.forward.airports %}
+            <p>{{ticket.forward.airports}}</p>
+            {% endif %}
+            {% if ticket.forward.transfer_city %}
+            <p style="font-size:50%;">{{ticket.forward.transfer_city}}</p>
+            {% endif %}
+            <br>
+            {% if ticket.backward.airports %}
+            <p>{{ticket.backward.airports}}</p>
+            {% endif %}
+            {% if ticket.backward.transfer_city%}
+            <p style="font-size:50%;">{{ticket.backward.transfer_city}}</p>
+            {% endif %}
+                </div>
+                <div class="col-md-2">
+                    <center>
+            <p>{{ticket.price}} rub</p>
+            <p>{{ticket.luggage}}</p>
+            <a href="{{ ticket.buy_url }}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Buy ticket</a>
+                    </center>
+                </div>
+            </div>
+            <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+            {% endfor %}
+        </div>
     </div>
-    
-    <div class="col-4">
-        <h2>AirTickets</h2>
-        {% for ticket in tickets_list %}
-            <p>company - {{ ticket.company }}</p>
-            <p>price - {{ ticket.price }} rub</p>
-            <hr />
-        {% endfor %}
+
+
+
+    <div class="tab-pane fade" id="hotels">
+        <center><h2 id="hotels">Hotels</h2></center>
+        <div class="row row row-cols-1 row-cols-md-3">
+            {% for hotel in hotel_list %}
+            <div class="card-columns">
+                <div class="card" style="width: 18rem;">
+                    <img src="{{ hotel.img }}" class="card-img-top" alt="">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ hotel.hotel_name }}</h5>
+                        <p class="card-text">
+                            price: {{ hotel.price }} rub </br>
+                            rating: {{ hotel.rating }} </br>
+                            reviews: {{ hotel.reviews }}
+                        </p>
+                        <a href="{{ hotel.url }}" class="btn btn-primary">Book</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    <div class="col-4">
-        <h2>Attractions</h2>
-        {% for attraction in attractions_list %}
-            <h3><a href="{{ attraction.url }}">{{ attraction.name }}</a></h3>
-            <p>address - {{ attraction.address }}</p>
-            <p>{{ attraction.description }}</p>
-            <img src="{{ attraction.img_url }}" width="200" height="150">
-            <hr />
-        {% endfor %}
+
+
+    <div class="tab-pane fade" id="attractions">
+        <center><h2 id="attractions">Attractions</h2></center>
+        <div class="row row-cols-md-3">
+            {% for attraction in attractions_list %}
+                <div class="card-columns">
+                    <div class="card" style="width: 20rem;">
+                        <img src="{{ attraction.img_url }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ attraction.name }}</h5>
+                            <p class="card-text">{{ attraction.description }}</p>
+                            <a href="{{ attraction.url }}" class="btn btn-primary">link</a>
+                        </div>
+                    </div>
+                </div>
+            
+                {% endfor %}
+
+        </div>
     </div>
-</div>
-    
+
 
 {% endblock %}

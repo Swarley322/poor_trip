@@ -1,13 +1,17 @@
 {% extends"base.html" %}
 
 {% block content %}
+
+<div class="spinner-wrapper">
+    <div class="spinner"></div>
+</div>
 <div class="row row-cols-1 row-cols-md-3">
     <div class="col mb-5">
         <div class="card">
             <img src="https://www.onetwotrip.com/ru/blog/wp-content/uploads/2016/10/building-in-singapore.jpg" width="200" height="250" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Азия</h5>
-                {% for country, cities in city_list.Asia.items() %}
+                {% for country, cities in city_list.asia.items() %}
                     {% if cities %}
                     <p>
                         <a class="btn btn-primary" data-toggle="collapse" href="#{{ country }}" role="button" aria-expanded="true" aria-controls="collapseExampl">{{ country }}</a>
@@ -15,9 +19,7 @@
                         {% for city in cities %}
                             <div class="collapse" id="{{ country }}">
                                 <div class="card card-body">
-                                    <h6><a href="{{ url_for('trip.index') }}">{{ city.name }}</a> </h6>
-                                    <p>price - {{ city.price }} rub</p>
-                                    <hr />
+                                    <h6><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound }}</a> </h6>
                                 </div>
                             </div>
                         {% endfor %}
@@ -31,7 +33,7 @@
             <img src="https://retroman.ru/wp-content/uploads/2010/12/europe.jpg" width="200" height="250" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Европа</h5>
-                {% for country, cities in city_list.Europe.items() %}
+                {% for country, cities in city_list.europe.items() %}
                     {% if cities %}
                     <p>
                         <a class="btn btn-primary" data-toggle="collapse" href="#{{ country }}" role="button" aria-expanded="true" aria-controls="collapseExampl">{{ country }}</a>
@@ -39,9 +41,7 @@
                         {% for city in cities %}
                             <div class="collapse" id="{{ country }}">
                                 <div class="card card-body">
-                                    <h6><a href="{{ url_for('trip.index') }}?city={{ city.name }}&checkin={{ city.checkin }}&checkout={{ city.checkout }}&money={{ city.money }}">{{ city.name }}</a> </h6>
-                                    <p>price - {{ city.price }} rub</p>
-                                    <hr />
+                                    <h6><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound }}</a> </h6>
                                 </div>
                             </div>
                         {% endfor %}
@@ -55,7 +55,7 @@
             <img src="https://www.forumdaily.com/wp-content/uploads/2017/07/Depositphotos_117096532_m-2015.jpg" width="200" height="250" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Америка</h5>
-                {% for country, cities in city_list.America.items() %}
+                {% for country, cities in city_list.america.items() %}
                     {% if cities %}
                     <p>
                         <a class="btn btn-primary" data-toggle="collapse" href="#{{ country }}" role="button" aria-expanded="true" aria-controls="collapseExampl">{{ country }}</a>
@@ -63,9 +63,7 @@
                         {% for city in cities %}
                             <div class="collapse" id="{{ country }}">
                                 <div class="card card-body">
-                                    <h6><a href="{{ url_for('trip.index') }}?city={{ city.name }}&checkin={{ city.checkin }}&checkout={{ city.checkout }}&money={{ city.money }}">{{ city.name }}</a> </h6>
-                                    <p>price - {{ city.price }} rub</p>
-                                    <hr />
+                                    <h6><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound }}</a> </h6>
                                 </div>
                             </div>
                         {% endfor %}
@@ -76,5 +74,15 @@
     </div>
 </div>
 
-
+<script>
+    $(document).ready(function() {
+    //Preloader
+    preloaderFadeOutTime = 500;
+    function hidePreloader() {
+    var preloader = $('.spinner-wrapper');
+    preloader.fadeOut(preloaderFadeOutTime);
+    }
+    hidePreloader();
+    });
+    </script>
 {% endblock %}

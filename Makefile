@@ -12,9 +12,11 @@ migrations:
 
 import:
 	@python import_cities.py
+	@echo cities imported
 	@python import_attractions.py
+	@echo attractions imported
 	@python import_airports_id.py
-	@echo imported
+	@echo airports_id imported
 
 tasks:
 	@echo running celery

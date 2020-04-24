@@ -1,18 +1,13 @@
-from datetime import datetime
-
-from flask import Blueprint, flash, render_template, redirect, request, url_for, session, request
+from datetime import datetime, date
+from flask import Blueprint, flash, render_template, redirect, session, url_for
+from flask_login import current_user
 
 from webapp.trip.forms import StartForm
-from webapp.trip.utils.get_affordable_cities import get_cities_dict
-from webapp.trip.utils.get_attractions import get_attractions_list
-from webapp.trip.utils.get_recommended_hotels import get_best_hotels
-from webapp.trip.utils.get_tickets_prices import get_tickets_prices
-
 from webapp.trip.models import AirportId
+from webapp.trip.utils.get_random_city import get_random_city
+from webapp.trip.utils.get_affordable_cities import get_affordable_cities
+from webapp.trip.utils.get_city_information import get_city_information
 
-
-# from webapp.trip.tickets import get_data, get_html
-# from datetime import datetime
 
 blueprint = Blueprint("trip", __name__)
 
@@ -24,62 +19,114 @@ def start():
     return render_template('trip/start.html', form=form, page_title=title,)
 
 
-@blueprint.route('/city', methods=["GET", "POST"])
+@blueprint.route('/city', methods=["GET"])
 def city():
-    if request.method == 'GET':
-        # return session['city'].title()
-        # return session['checkin'].strftime("%d/%m/%Y")
-        return session['checkout'].strftime("%d/%m/%Y")
-        # return session['money']
-
-    form = StartForm()
     title = "Your cities"
-    if form.validate_on_submit():
-        city = form.city.data
-        user_money = form.money.data
-        checkin = form.checkin.data
-        checkout = form.checkout.data
+    if current_user.is_anonymous:
+        flash("Please login")
+        return redirect(url_for('trip.start'))
 
-        airports = AirportId.query.filter(AirportId.city == city.lower().strip()).count()
+    try:
+        if (datetime.now() - session["request_date"]).seconds // 3600 <= 1:
+            city_outbound = session['city_outbound']
+            outbound_date = session['outbound_date']
+            inbound_date = session['inbound_date']
+            user_money = session['user_money']
+
+            city_list = get_affordable_cities(
+                            city_outbound,
+                            outbound_date,
+                            inbound_date,
+                            user_money
+            )
+
+            if city_list == "No tickets":
+                flash("There are no tickets for this dates, please try another dates")
+                return redirect(url_for('trip.start'))
+            elif city_list == "Not enough money":
+                flash("You are too poor, earn more money")
+                return redirect(url_for('trip.start'))
+            else:
+                return render_template("trip/cardsV2.html", city_list=city_list, page_title=title)
+
+        else:
+            flash("Fill the form again")
+            return redirect(url_for('trip.start'))
+    except KeyError:
+        flash("Fill the form")
+        return redirect(url_for('trip.start'))
+
+
+@blueprint.route('/process-data', methods=["POST"])
+def process_data():
+    form = StartForm()
+    if form.validate_on_submit():
+        city_outbound = form.city_outbound.data
+        user_money = form.money.data
+        outbound_date = form.outbound_date.data
+        inbound_date = form.inbound_date.data
+
+        airports = AirportId.query.filter(AirportId.city == city_outbound.lower().strip()).count()
         if airports:
-            session['city'] = city.lower()
+            session['city_outbound'] = city_outbound.lower()
         else:
             flash("Incorrect outbound city, please choose russian city with airport")
             return redirect(url_for('trip.start'))
 
-        if checkin > checkout or checkin == checkout or checkin <= datetime.now():
+        if outbound_date > inbound_date or outbound_date == inbound_date or outbound_date < date(2020, 7, 1) or outbound_date <= date.today():
             flash("Incorrect dates")
             return redirect(url_for('trip.start'))
         else:
-            session['checkin'] = checkin
-            session['checkout'] = checkout
-            session['money'] = user_money
+            session["outbound_date"] = datetime.combine(outbound_date, datetime.min.time())
+            session["inbound_date"] = datetime.combine(inbound_date, datetime.min.time())
 
+        if user_money <= 0:
+            flash("Incorrect money value")
+            return redirect(url_for('trip.start'))
+        else:
+            session['user_money'] = user_money
 
-        # tickets_price = get_tickets_prices(city.strip(), checkin.strftime("%d/%m/%Y")
-        # money = user_money - int(tickets_price[0]["price"].replace("Р", ""))
+        session["request_date"] = datetime.now()
 
-        city_list = get_cities_dict(user_money, checkin.strftime("%d/%m/%Y"), checkout.strftime("%d/%m/%Y"))
-        return render_template("trip/cards.html", city_list=city_list, page_title=title)
-    flash("Incorrect money value")
+        if current_user.is_anonymous:
+            random_city = get_random_city(city_outbound, outbound_date, inbound_date, user_money)
+            if random_city == "No tickets":
+                flash("There are no tickets for this dates, please try another dates")
+                return redirect(url_for('trip.start'))
+            elif random_city == "Not enough money":
+                flash("You are too poor, earn more money")
+                return redirect(url_for('trip.start'))
+            else:
+                return redirect(url_for('trip.index', city_inbound=random_city))
+        else:
+            return redirect(url_for('trip.city'))
+
+    flash("Something goes wrong")
     return redirect(url_for('trip.start'))
 
 
-@blueprint.route('/index')
-def index():
-    city = session['city'].lower()
-    checkin = session["checkin"]
-    checkout = session["checkout"]
-    money = session["money"]
-    hotel_list = get_best_hotels(city, checkin, checkout, money)
-    attractions_list = get_attractions_list(city)
-    # html = get_html(city, "Новосибирск", datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y-%m-%d"), datetime.strptime(checkout, "%d/%m/%Y").strftime("%Y-%m-%d"), "2")
-    # tickets_list = get_data(html)
-    # print(tickets_list)
-    # return render_template('trip/index.html', hotel_list=hotel_list, tickets_list=tickets_list)
-    return render_template('trip/index.html', hotel_list=hotel_list, attractions_list=attractions_list)
+@blueprint.route('/index/<string:city_inbound>', methods=["GET"])
+def index(city_inbound):
+
+    city_outbound = session["city_outbound"]
+    outbound_date = session["outbound_date"]
+    inbound_date = session["inbound_date"]
+    user_money = session["user_money"]
+    title = city_inbound.title()
+    data = get_city_information(city_outbound, city_inbound,  outbound_date, inbound_date, user_money)
+    hotel_list = data["hotels"]
+    attractions_list = data["attractions"]
+    tickets_list = [ticket for _, tickets in data["tickets"].items() for ticket in tickets]
+    return render_template(
+                'trip/index.html',
+                title=title,
+                hotel_list=hotel_list,
+                attractions_list=attractions_list,
+                tickets_data=tickets_list
+    )
 
 
-@blueprint.route('/guest')
-def guest():
-    pass
+@blueprint.route('/test')
+def test():
+
+    return render_template("test/test.html")
