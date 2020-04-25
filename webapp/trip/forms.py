@@ -4,7 +4,8 @@ from wtforms.validators import DataRequired
 
 
 class StartForm(FlaskForm):
-    city_outbound = StringField('City outbound', render_kw={"class": "form-control"})
+    # city_outbound = StringField('City outbound', render_kw={"class": "form-control"})
+    city_outbound = StringField('City outbound', render_kw={"class": "typeahead tt-query", "autocomplete": "off", "spellcheck": "false", "type": "text"})
     outbound_date = DateField(
                         'Outbound date',
                         validators=[DataRequired()],
@@ -20,4 +21,6 @@ class StartForm(FlaskForm):
                          render_kw={"class": "form-control"})
 
     remember_me = BooleanField('Remember Me')
-    submit = SubmitField('GO', render_kw={"class": "btn btn-primary"})
+    submit = SubmitField('GO', render_kw={
+                    "class": "btn btn-primary",
+                    "data-loading-text": "<i class='fa fa-spinner fa-spin '></i> Processing Order"})

@@ -17,6 +17,8 @@ def get_id(city):
 
 
 def get_user_ticket(city_outbound, city_inbound, outbound_date, inbound_date, adults_number=1):
+    """
+    """
 
     url = URL.format(
         id_outbound=get_id(city_outbound),

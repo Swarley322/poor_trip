@@ -1,88 +1,27 @@
 {% extends"base.html" %}
-
 {% block content %}
 
-<div class="spinner-wrapper">
-    <div class="spinner"></div>
+<center><h1 class="mb-4">Best choices for you</h1></center>
+<div class="row">
+    {% for country, cities in city_list.items() %}
+    <div class="col-md-4 ftco-animate">
+        <div class="card-body">                     
+            <div class="accordion" id="accordionExample1">
+                <div class="card" style="width: 290px">
+                    <div class="card-header" id="headingOne" style= "background-image: url({{ url_for('static', filename='img/'+country+'1.jpg') }}); height: 162px; width: 288px; background-size: cover; background-repeat:no-repeat; align:center" data-toggle="collapse" data-target=#{{ country }}>
+                        <em><h5 style="color: white">{{country}}</h5></em>
+                    </div>
+                    <div id={{ country }} class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample1">
+                        <div class="card-body">
+                            {% for city in cities %}
+                                <center><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound.title() }}</a></center> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    {% endfor %}
 </div>
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col mb-5">
-        <div class="card">
-            <img src="https://www.onetwotrip.com/ru/blog/wp-content/uploads/2016/10/building-in-singapore.jpg" width="200" height="250" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Азия</h5>
-                {% for country, cities in city_list.asia.items() %}
-                    {% if cities %}
-                    <p>
-                        <a class="btn btn-primary" data-toggle="collapse" href="#{{ country }}" role="button" aria-expanded="true" aria-controls="collapseExampl">{{ country }}</a>
-                    </p>
-                        {% for city in cities %}
-                            <div class="collapse" id="{{ country }}">
-                                <div class="card card-body">
-                                    <h6><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound }}</a> </h6>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    <div class="col mb-4">
-        <div class="card">
-            <img src="https://retroman.ru/wp-content/uploads/2010/12/europe.jpg" width="200" height="250" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Европа</h5>
-                {% for country, cities in city_list.europe.items() %}
-                    {% if cities %}
-                    <p>
-                        <a class="btn btn-primary" data-toggle="collapse" href="#{{ country }}" role="button" aria-expanded="true" aria-controls="collapseExampl">{{ country }}</a>
-                    </p>
-                        {% for city in cities %}
-                            <div class="collapse" id="{{ country }}">
-                                <div class="card card-body">
-                                    <h6><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound }}</a> </h6>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    <div class="col mb-4">
-        <div class="card">
-            <img src="https://www.forumdaily.com/wp-content/uploads/2017/07/Depositphotos_117096532_m-2015.jpg" width="200" height="250" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Америка</h5>
-                {% for country, cities in city_list.america.items() %}
-                    {% if cities %}
-                    <p>
-                        <a class="btn btn-primary" data-toggle="collapse" href="#{{ country }}" role="button" aria-expanded="true" aria-controls="collapseExampl">{{ country }}</a>
-                    </p>
-                        {% for city in cities %}
-                            <div class="collapse" id="{{ country }}">
-                                <div class="card card-body">
-                                    <h6><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound }}</a> </h6>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    $(document).ready(function() {
-    //Preloader
-    preloaderFadeOutTime = 500;
-    function hidePreloader() {
-    var preloader = $('.spinner-wrapper');
-    preloader.fadeOut(preloaderFadeOutTime);
-    }
-    hidePreloader();
-    });
-    </script>
 {% endblock %}

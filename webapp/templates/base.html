@@ -8,7 +8,71 @@
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style2.css') }}"> -->
-        
+        <style type="text/css">
+            .bs-example {
+                font-family: sans-serif;
+                position: relative;
+                margin: 100px;
+            }
+            .typeahead, .tt-query, .tt-hint {
+                border: 2px solid #CCCCCC;
+                border-radius: 4px;
+                font-size: 22px; /* Set input font size */
+                height: 40px;
+                line-height: 30px;
+                outline: medium none;
+                padding: 8px 12px;
+                width: 350px;
+            }
+            .typeahead {
+                background-color: #FFFFFF;
+            }
+            .typeahead:focus {
+                border: 2px solid #0097CF;
+                box-shadow:0 0 20px #9ecaed;
+            }
+            .tt-query {
+                box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+            }
+            .tt-hint {
+                color: #999999;
+            }
+            .tt-menu {
+                background-color: #FFFFFF;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                border-radius: 8px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+                margin-top: 12px;
+                padding: 8px 0;
+                width: 422px;
+            }
+            .tt-suggestion {
+                font-size: 22px;  /* Set suggestion dropdown font size */
+                padding: 3px 20px;
+            }
+            .tt-suggestion:hover {
+                cursor: pointer;
+                background-color: #0097CF;
+                color: #FFFFFF;
+            }
+            .tt-suggestion p {
+                margin: 0;
+            }
+            .form-control{
+                border: 2px solid #CCCCCC;
+                border-radius: 4px;
+                font-size: 22px; /* Set input font size */
+                height: 40px;
+                line-height: 30px;
+                outline: medium none;
+                padding: 8px 12px;
+                width: 350px;
+            }
+            .form-control:focus{
+                box-shadow:0 0 20px #9ecaed;
+                border: 2px solid #0097CF;
+            }
+            </style>
         <title>{{ page_title }}</title>
     </head>
     <body>
@@ -22,6 +86,31 @@
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-        <!-- <script src="{{ url_for('static', filename='js/main3.js') }}"></script> -->
+        <script src="{{ url_for('static', filename='js/typeahead.js') }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                // Defining the local dataset
+                var cars = ["Санкт-Петербург", "Москва", "Абакан", "Агзу", "Адамовка", "Айхал", "Алдан", "Амдерма", "Анадырь", "Анапа", "Апатиты", "Архангельск", "Астрахань", "Ачинск", "Багдарин", "Байкит", "Барнаул", "Батагай", "Белая Гора", "Белгород", "Белоярский", "Берёзово", "Беринговский", "Бийск", "Благовещенск", "Бованенково", "Богородское", "Бодайбо", "Бор", "Братск", "Брянск", "Бугульма", "Вагай", "Ванавара", "Вилюйск", "Владивосток", "Владикавказ", "Владимир", "Волгоград", "Вологда", "Воркута", "Воронеж", "Восток", "Геленджик", "Горно-Алтайск", "Грозный", "Гурзуф", "Дальнегорск", "Дальнереченск", "Депутатский", "Диксон", "Домбаровский", "Евпатория", "Единка", "Ейск", "Екатеринбург", "Енисейск", "Ессей", "Железногорск-Илимский", "Жиганск", "Жилинда", "Зональное", "Зырянка", "Иваново", "Игарка", "Игрим", "Ижевск", "Инта", "Иркутск", "Йошкар-Ола", "Кавалерово", "Казань", "Казачинское", "Калининград", "Калуга", "Каргасок", "Кваркено", "Кемерово", "Кепервеем", "Керчь", "Киренск", "Киров", "Кислокан", "Кичменгский Городок", "Когалым", "Кодинск", "Комсомольск-На-Амуре", "Кослан", "Кострома", "Котлас", "Краснодар", "Краснокаменск", "Красноселькуп", "Красноярск", "Красный Чикой", "Кузьмовка", "Кунгуртуг", "Курган", "Курильск", "Курск", "Кутопьюган", "Куюмба", "Кызыл", "Лаврентия", "Ларьяк", "Ленск", "Летняя Золотица", "Лешуконское", "Липецк", "Магадан", "Магнитогорск", "Максимовка", "Мама", "Марково", "Махачкала", "Мезень", "Минеральные Воды", "Мирный", "Мирюга", "Мотыгино", "Мурманск", "Муторай", "Мыс Каменный", "Мыс Шмидта", "Надым", "Назрань", "Накын", "Нальчик", "Нарьян-Мар", "Нелькан", "Нерюнгри", "Несь", "Нефтекамск", "Нефтеюганск", "Нижнеангарск", "Нижневартовск", "Нижнекамск", "Нижний Новгород", "Нижняя Пеша", "Николаевск-На-Амуре", "Новокузнецк", "Новосибирск", "Новый Уренгой", "Ноглики", "Нори", "Норильск", "Ноябрьск", "Ныда", "Нюрба", "Нягань", "Озерная", "Октябрьский", "Олёкминск", "Олема", "Оленёк", "Ома", "Омолон", "Омск", "Омсукчан", "Орёл", "Оренбург", "Орск", "Оскоба", "Оссора", "Оха", "Охотск", "Ошарово", "Палана", "Пангоды", "Партенит", "Певек", "Пенза", "Пермь", "Петрозаводск", "Петропавловск-Камчатский", "Печора", "Пластун", "Полигус", "Полины Осипенко", "Преображение", "Провидения Бухта", "Псков", "Ростов-На-Дону", "Сабетта", "Саки", "Саккырыр", "Салехард", "Самара", "Сангар", "Саранск", "Саратов", "Саскылах", "Сафоново", "Светлая", "Светлогорск", "Светлый", "Свободный", "Севастополь", "Северо-Енисейский", "Сеймчан", "Сиверский", "Симферополь", "Смоленск", "Соболево", "Советская Гавань", "Советский", "Соловки", "Сочи", "Сояна", "Среднеколымск", "Ставрополь", "Старый Оскол", "Стрежевой", "Сунтар", "Сургут", "Суринда", "Сусуман", "Сыктывкар", "Таганрог", "Таксимо", "Талакан", "Тамбов", "Тара", "Тарко-Сале", "Тверь", "Терней", "Тикси", "Тиличики", "Тобольск", "Тоджа", "Толька", "Томск", "Тура", "Туруханск", "Тутончаны", "Тында", "Тюмень", "Удачный", "Улан-Удэ", "Ульяновск", "Урай", "Усинск", "Усть-Илимск", "Усть-Камчатск", "Усть-Куйга", "Усть-Кут", "Усть-Мая", "Усть-Нера", "Усть-Хайрюзово", "Усть-Цильма", "Уфа", "Хабаровск", "Ханты-Мансийск", "Чара", "Чебоксары", "Челябинск", "Чемдальск", "Череповец", "Черский", "Чиринда", "Чита", "Чокурдах", "Чумикан", "Шахтерск", "Шойна", "Шушенское", "Элиста", "Южно-Курильск", "Южно-Сахалинск", "Юкта", "Юрюнг-Хая", "Якутск", "Ямбург", "Ярославль", "Нью-Йорк", "Токио", "Шанхай", "Лос-Анджелес", "Рио-Де-Жанейро", "Пекин", "Париж", "Сеул", "Лондон", "Гонконг", "Бангкок", "Майами", "Мадрид", "Торонто", "Сингапур", "Сидней", "Берлин", "Рим", "Милан", "Лиссабон", "Ванкувер", "Ташкент", "Гавана", "Лас-Вегас", "Варшава", "Будапешт", "Турин", "Куала-Лумпур", "Дубай", "Стокгольм", "Хельсинки", "Тбилиси", "Братислава", "Нью-Дели", "Самарканд", "Киото", "Барселона"];
+                
+                // Constructing the suggestion engine
+                var cars = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.whitespace,
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    local: cars
+                });
+                
+                // Initializing the typeahead
+                $('.typeahead').typeahead({
+                    hint: true,
+                    highlight: true, /* Enable substring highlighting */
+                    minLength: 1 /* Specify minimum characters required for showing result */
+                },
+                {
+                    name: 'cars',
+                    source: cars
+                });
+            });  
+            </script>
+            
     </body>
 </html>

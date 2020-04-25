@@ -36,7 +36,8 @@ def get_html(url):
 
 
 def get_html_selenium(url):
-    chromedriver = "/Users/dmitrykim/projects/poor_trip/chromedriver"
+    # chromedriver = "/Users/dmitrykim/projects/poor_trip/chromedriver"
+    chromedriver = "/Users/dmitrykim/projects/poor_trip/flask/chromedriver"
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     browser = webdriver.Chrome(executable_path=chromedriver, options=options)

@@ -26,14 +26,15 @@ services:
             context: .
             target: webapp
         container_name: poor_trip
+        restart: always
         environment:
             - CELERY_BROKER_URL=redis://redis:6379/
             # - CELERY_RESULT_BACKEND=redis://redis:6379
-            - FLASK_APP=webapp
-            - FLASK_ENV=development
-            - FLASK_APP_PORT=5000
-        ports:
-            - 5000:5000
+            # - FLASK_APP=webapp
+            # - FLASK_ENV=development
+            # - FLASK_APP_PORT=5000
+        # ports:
+        #     - 5000:5000
         links:
             - db
             - redis
@@ -56,4 +57,13 @@ services:
             - redis
             - webapp
             - db
-    
+    # nginx:
+    #     image: nginx
+    #     ports:
+    #         - "8080:80"
+    #     volumes:
+    #         - ./conf.d:/etc/nginx/conf.d
+    #     networks:
+    #         - web_nw
+    #     depends_on: 
+    #         - webapp

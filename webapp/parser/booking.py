@@ -121,6 +121,7 @@ def get_hotel_information(html, city, checkin, checkout):
 
 def safe_information(city, hotel_name, week_price, hotel_link, rating,
                      reviews, img_url, distance, stars, checkin, checkout):
+
     parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
@@ -182,14 +183,6 @@ def get_avg_reviews(city_id, week_number, year):
     return int(reviews / count_hotels)
 
 
-# def get_hotel_description(html):
-#     soup = BS(html, 'html.parser')
-#     rows = soup.find('div', id='property_description_content').find_all('p')
-#     description = ' '.join([row.text for row in rows])
-#     # picture = soup.find('div', id='photo_wrapper').find('img')['src']
-#     return description
-
-
 def get_page_count(html):
     soup = BS(html, 'html.parser')
     paggination = soup.find_all('ul', class_='bui-pagination__list')[0]
@@ -210,6 +203,16 @@ def repeat_get_html(url):
 
 
 def get_all_hotels(city, checkin, checkout):
+    """Parsing all hotels in the city in 7 days range, adding all hotels information and averageinfo in db
+
+    params:
+    - city: string object, city name in russian
+    - checkin: string object, checkin date in format dd/mm/YYYY
+    - checkout: string object, checkout date in format dd/mm/YYYY
+
+    return: bool object "False or True"
+    """
+
     parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
     url = get_url(city, checkin, checkout)
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
@@ -225,15 +228,12 @@ def get_all_hotels(city, checkin, checkout):
     try:
         pages = get_page_count(html)
     except Exception as e:
-        # with open(f"errors/Pages for {city} - week={week_number}.html", "w") as f:
-        #     f.write(html)
         print(e)
         print(f"HTML for pages, {city}-{checkin}-{checkout} doesn't returned")
         return False
     print(f"Parsing process {city} - {checkin} - {checkout} - started")
 
     for page in range(pages - 1):
-        # print(f"page-{page + 1} parsing started {datetime.now()}")
         html = get_html(url)
         if not html:
             time.sleep(get_random_sleep_time())

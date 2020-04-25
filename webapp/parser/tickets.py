@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup as BS
 if platform.system() == 'Windows':
     locale.setlocale(locale.LC_ALL, "russian")
 else:
-    locale.setlocale(locale.LC_TIME, 'ru_RU')
+    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
 
 def get_valid_arrival_date(date):
@@ -104,6 +104,7 @@ def get_ticket_information(soup):
 
 
 def get_tickets_data(html):
+    
     soup = BS(html, 'html.parser')
     result = {"recommended": [], "common": []}
     tickets = soup.find("div", class_="serp-layout_kb__content")
