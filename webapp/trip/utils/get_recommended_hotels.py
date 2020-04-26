@@ -7,8 +7,8 @@ from webapp.trip.models import AvgPriceReviews, City, Hotel
 
 
 def get_best_hotels(city, checkin, checkout, money):
-    # parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
-    parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=2)).strftime("%d/%m/%Y")
+    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
+    # parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime("%d/%m/%Y")
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
 

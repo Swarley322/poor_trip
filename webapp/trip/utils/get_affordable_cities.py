@@ -7,9 +7,9 @@ from webapp.trip.utils.get_ticket_prices import get_user_ticket
 def get_affordable_cities(city_outbound, outbound_date, inbound_date, user_money):
     """Function 
     """
-    parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=2)).strftime("%d/%m/%Y")
+    # parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=2)).strftime("%d/%m/%Y")
     # parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime("%d/%m/%Y")
-    # parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
+    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
 
     # result = {
     #     "europe": {

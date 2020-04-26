@@ -11,16 +11,11 @@ RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
 
 ENV LANG ru_RU.UTF-8 
 # ENTRYPOINT flask run --host=0.0.0.0
+ENTRYPOINT uwsgi --http-socket :5000 --plugin python --module wsgi:app
 # CMD ["uwsgi", "app.ini"]
-CMD ["python", "run.py"]
+# CMD ["python", "run.py"]
 
 
 FROM poor_trip_webapp as celery
-# RUN locale-gen ru_RU.UTF-8
-# ENV LANGUAGE ru_RU:ru
-# ENV LANG ru_RU.UTF-8
-# ENV LC_ALL ru_RU.UTF-8
-# ENV LC_TIME=ru_RU.UTF-8
-# RUN locale-gen ru_RU.UTF-8 && dpkg-reconfigure locales
 
 ENTRYPOINT make

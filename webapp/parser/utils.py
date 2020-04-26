@@ -37,10 +37,11 @@ def get_html(url):
 
 def get_html_selenium(url):
     # chromedriver = "/Users/dmitrykim/projects/poor_trip/chromedriver"
-    chromedriver = "/Users/dmitrykim/projects/poor_trip/flask/chromedriver"
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
-    browser = webdriver.Chrome(executable_path=chromedriver, options=options)
+    # browser = webdriver.Chrome(executable_path=chromedriver, options=options)
+    capabilities = options.to_capabilities()
+    browser = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
     browser.get(url)
     time.sleep(5)
     html = browser.page_source

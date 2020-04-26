@@ -38,7 +38,7 @@ def get_hotels_task():
 
 def create_city_list_task():
     cities = [x.ru_name for x in City.query.all()]
-    current_date = datetime.now(timezone("Europe/Moscow"))
+    current_date = datetime.now(timezone("Europe/Moscow")).replace(tzinfo=None)
     with open("cities.txt", "w") as f:
         for city in cities:
             if current_date < july:
