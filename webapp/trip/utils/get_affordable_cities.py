@@ -22,6 +22,7 @@ def get_affordable_cities(city_outbound, outbound_date, inbound_date, user_money
         tickets = get_user_ticket(city_outbound, city.ru_name, outbound_date, inbound_date, adults_number=2)
 
         if tickets:
+            ticket_count += 1
             cheapest_ticket = min(tickets["recommended"], key=lambda x: x["price"])
             if cheapest_ticket["forward"]["arrival_date"]:
                 checkin = cheapest_ticket["forward"]["arrival_date"]
@@ -36,22 +37,17 @@ def get_affordable_cities(city_outbound, outbound_date, inbound_date, user_money
             money_without_tickets = user_money - cheapest_ticket["price"]
 
             avg_info = AvgPriceReviews.query.filter_by(week_number=week_number) \
-                                                            .filter_by(parsing_date=today_parsing_date) \
-                                                            .filter_by(city_id=city.id).count()
+                                            .filter_by(parsing_date=today_parsing_date) \
+                                            .filter_by(city_id=city.id).count()
 
             if avg_info:
                 avg_day_price = AvgPriceReviews.query.filter_by(week_number=week_number) \
-                                                            .filter_by(parsing_date=today_parsing_date) \
-                                                            .filter_by(city_id=city.id).first().avg_day_price
+                                                     .filter_by(parsing_date=today_parsing_date) \
+                                                     .filter_by(city_id=city.id).first().avg_day_price
             else:
                 avg_day_price = AvgPriceReviews.query.filter_by(week_number=week_number) \
-                                                            .filter_by(parsing_date=yesterday_parsing_date) \
-                                                            .filter_by(city_id=city.id).first().avg_day_price
-
-            # except Exception as e:
-            #     print(e)
-            #     print(f"No avg_day_price for {city.ru_name}, for week={week_number}")
-            #     continue
+                                                     .filter_by(parsing_date=yesterday_parsing_date) \
+                                                     .filter_by(city_id=city.id).first().avg_day_price
 
             if money_without_tickets - avg_day_price * days_staying > 0:
                 city_info = {
@@ -72,7 +68,6 @@ def get_affordable_cities(city_outbound, outbound_date, inbound_date, user_money
                 hotel_count += 1
             else:
                 continue
-            ticket_count += 1
 
     if ticket_count == 0:
         return "No tickets"

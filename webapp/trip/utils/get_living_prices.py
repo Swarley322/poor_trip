@@ -2,7 +2,7 @@ from webapp.trip.models import City
 
 
 def get_living_prices(city):
-    """ruturnig dict with keys (below) and float prices
+    """rеturnig dict with keys (below) and float prices
 
     Meal, Inexpensive Restaurant
     Meal for 2 People, Mid-range Restaurant, Three-course

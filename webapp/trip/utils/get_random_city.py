@@ -41,7 +41,7 @@ def get_random_city(city_outbound, outbound_date, inbound_date, user_money):
                 continue
         else:
             continue
-    if ticket_count == 0 :
+    if ticket_count == 0:
         return "No tickets"
     else:
         return "Not enough money"
