@@ -3,11 +3,12 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 from webapp.trip.models import City
-from webapp.parser.live_prices import safe_city_prices
 from webapp.parser.booking import get_all_hotels
+from webapp.parser.live_prices import safe_city_prices
+from webapp.parser.utils import get_random_sleep_time
 
 
-# current_date = datetime.now(timezone("Europe/Moscow"))
+july = datetime.strptime("01/07/2020", "%d/%m/%Y")
 
 
 def get_hotels_task():
@@ -37,10 +38,14 @@ def get_hotels_task():
 
 def create_city_list_task():
     cities = [x.ru_name for x in City.query.all()]
+    current_date = datetime.now(timezone("Europe/Moscow")).replace(tzinfo=None)
     with open("cities.txt", "w") as f:
         for city in cities:
-            checkin = datetime.now(timezone('Europe/Moscow')) + timedelta(days=1)
-            for _ in range(5):
+            if current_date < july:
+                checkin = july
+            else:
+                checkin = datetime.now(timezone('Europe/Moscow')) + timedelta(days=1)
+            for _ in range(13):
                 checkout = checkin + timedelta(days=7)
                 f.write(city + "\n")
                 f.write(checkin.strftime("%d/%m/%Y") + "\n")
@@ -51,10 +56,14 @@ def create_city_list_task():
 
 def get_live_prices_task():
     for city in City.query.all():
-        safe_city_prices(city.eng_name.title())
-        if not city:
-            print(f"Live prices - {datetime.now(timezone('Europe/Moscow'))} - {city.ru_name} CRASHED")
-        time.sleep(5)
+        print(city.eng_name.title())
+        price = safe_city_prices(city.eng_name.title())
+        if not price:
+            time.sleep(get_random_sleep_time())
+            price = safe_city_prices(city.eng_name.title())
+            continue
+        print(f"Prices for {city.eng_name} parsed")
+        time.sleep(get_random_sleep_time())
     return f"Live prices - {datetime.now(timezone('Europe/Moscow'))} parsed"
 
 
