@@ -20,7 +20,7 @@ def login():
 @blueprint.route("/logout")
 def logout():
     logout_user()
-    flash("Good bye!")
+    flash("До свидания!")
     return redirect(url_for('trip.start'))
 
 

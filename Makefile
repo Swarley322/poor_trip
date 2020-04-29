@@ -17,6 +17,8 @@ import:
 	@echo attractions imported
 	@python import_airports_id.py
 	@echo airports_id imported
+	@python import_living_prices.py
+	@echo living_prices imported
 
 tasks:
 	@echo running celery

@@ -13,11 +13,7 @@ class City(db.Model):
     eng_country = db.Column(db.String)
     ru_country = db.Column(db.String)
     city_img = db.Column(db.String, nullable=True)
-    inexpensive_meal_price = db.Column(db.Float)
-    restaurant_2_persons = db.Column(db.Integer)
-    water_033 = db.Column(db.Integer)
-    one_way_ticket = db.Column(db.Integer)
-    internet = db.Column(db.Integer)
+    living_prices = db.Column(JSON, nullable=True)
 
     def __repr__(self):
         return f"""City information (name={self.ru_name},
@@ -118,8 +114,6 @@ class Ticket(db.Model):
     )
     outbound_date = db.Column(db.String)  # dd/mm/YYYY
     inbound_date = db.Column(db.String)  # dd/mm/YYYY
-#     departure_date = db.Column(db.String)  # dd/mm/YYYY
-#     arriving_date = db.Column(db.String)  # dd/mm/YYYY
     parsing_date = db.Column(db.String)
     price = db.Column(JSON, nullable=True)
 

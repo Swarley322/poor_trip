@@ -1,20 +1,41 @@
 {% extends"base.html" %}
 {% block content %}
+<style>
+    a:link {
+    color: white;
+    background-color: transparent;
+    text-decoration: none;
+    }
+</style>
 
-<center><h1 class="mb-4">Best choices for you</h1></center>
+<div class="spinner-wrapper">
+    <div class="sk-cube-grid">
+        <div class="sk-cube sk-cube1"></div>
+        <div class="sk-cube sk-cube2"></div>
+        <div class="sk-cube sk-cube3"></div>
+        <div class="sk-cube sk-cube4"></div>
+        <div class="sk-cube sk-cube5"></div>
+        <div class="sk-cube sk-cube6"></div>
+        <div class="sk-cube sk-cube7"></div>
+        <div class="sk-cube sk-cube8"></div>
+        <div class="sk-cube sk-cube9"></div>
+    </div>
+</div>
+
+<center><h1 class="mb-4">Доступные страны</h1></center>
 <div class="row">
     {% for country, cities in city_list.items() %}
     <div class="col-md-4 ftco-animate">
         <div class="card-body">                     
             <div class="accordion" id="accordionExample1">
                 <div class="card" style="width: 290px">
-                    <div class="card-header" id="headingOne" style= "background-image: url({{ url_for('static', filename='img/'+country+'1.jpg') }}); height: 162px; width: 288px; background-size: cover; background-repeat:no-repeat; align:center" data-toggle="collapse" data-target=#{{ country }}>
-                        <em><h5 style="color: white">{{country}}</h5></em>
-                    </div>
+                    <a class="card-header" href="" id="headingOne" style= "background-image: url({{ url_for('static', filename='img/'+country+'.jpg') }}); height: 162px; width: 288px; background-size: cover; background-repeat:no-repeat; align:center" data-toggle="collapse" data-target=#{{ country }}>
+                        <em><h5 style="color:white"> {{country}}</h5></em>
+                    </a>
                     <div id={{ country }} class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample1">
                         <div class="card-body">
                             {% for city in cities %}
-                                <center><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}">{{ city.city_inbound.title() }}</a></center> 
+                                <center><a href="{{ url_for('trip.index', city_inbound=city.city_inbound) }}" target="_blank">{{ city.city_inbound.title() }}</a></center> 
                             {% endfor %}
                         </div>
                     </div>

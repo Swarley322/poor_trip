@@ -45,7 +45,7 @@ def create_city_list_task():
                 checkin = july
             else:
                 checkin = datetime.now(timezone('Europe/Moscow')) + timedelta(days=1)
-            for _ in range(5):
+            for _ in range(13):
                 checkout = checkin + timedelta(days=7)
                 f.write(city + "\n")
                 f.write(checkin.strftime("%d/%m/%Y") + "\n")

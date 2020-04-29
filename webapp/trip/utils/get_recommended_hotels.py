@@ -7,8 +7,8 @@ from webapp.trip.models import AvgPriceReviews, City, Hotel
 
 
 def get_best_hotels(city, checkin, checkout, money):
-    parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
-    # parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime("%d/%m/%Y")
+    today_parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
+    yesterday_parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime("%d/%m/%Y")
     week_number = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%W"))
     year = int(datetime.strptime(checkin, "%d/%m/%Y").strftime("%Y"))
 
@@ -20,16 +20,29 @@ def get_best_hotels(city, checkin, checkout, money):
                             City.eng_name == city.lower()
                             )).first().id
 
-    avg_reviews = AvgPriceReviews.query.filter_by(city_id=city_id) \
-                                       .filter_by(parsing_date=parsing_date) \
-                                       .filter_by(week_number=week_number) \
-                                       .filter_by(year=year).first().avg_reviews
+    avg_info = AvgPriceReviews.query.filter_by(city_id=city_id) \
+                                    .filter_by(parsing_date=today_parsing_date) \
+                                    .filter_by(week_number=week_number) \
+                                    .filter_by(year=year).first()
+    if avg_info:
+        parsing_date = today_parsing_date
+    else:
+        avg_info = AvgPriceReviews.query.filter_by(city_id=city_id) \
+                                        .filter_by(parsing_date=yesterday_parsing_date) \
+                                        .filter_by(week_number=week_number) \
+                                        .filter_by(year=year).first()
+        parsing_date = yesterday_parsing_date
+
+    avg_day_price_city = avg_info.avg_day_price
+    avg_reviews = avg_info.avg_reviews
+
     result = []
     for hotel in Hotel.query.filter(Hotel.parsing_date == parsing_date) \
                             .filter(Hotel.week_number == week_number) \
                             .filter(Hotel.year == year) \
                             .filter(Hotel.city_id == city_id):
         if hotel.reviews and hotel.avg_day_price and \
+                             avg_day_price_city / hotel.avg_day_price < 4 and \
                              hotel.avg_day_price * days_staying <= money and \
                              avg_reviews <= hotel.reviews:
             hotel_link = re.sub("checkin=\\d{4}-\\d{2}-\\d{2}", real_checkin, hotel.hotel_link)

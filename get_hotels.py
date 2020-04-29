@@ -16,7 +16,7 @@ with app.app_context():
             checkin = july
         else:
             checkin = current_date + timedelta(days=1)
-        for _ in range(2):
+        for _ in range(1):
             start = datetime.now()
             checkout = checkin + timedelta(days=7)
             get_all_hotels(city.ru_name,

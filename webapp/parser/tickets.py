@@ -64,7 +64,7 @@ def get_ticket_information(soup):
 
         try:
             arrival_date = tag.find("div", class_="flight_list__arrival-date").text.strip()
-            arrival_date = get_valid_arrival_date(arrival_date).strftime("%d/%m/%Y")
+            arrival_date = get_valid_arrival_date(arrival_date).strftime("%d-%m-%Y")
         except AttributeError:
             arrival_date = False
 

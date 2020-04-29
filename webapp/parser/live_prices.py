@@ -32,7 +32,8 @@ def get_live_prices(html):
 
 
 def safe_city_prices(city):
-    url = f"https://www.numbeo.com/cost-of-living/in/{city}?displayCurrency=RUB"
+    """city - eng city name (Moscow)"""
+    url = f"https://www.numbeo.com/cost-of-living/in/{city.title()}?displayCurrency=RUB"
     html = get_html(url)
     if not html:
         print(f"HTML for {city} live_prices doesn't returned")

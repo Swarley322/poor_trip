@@ -4,23 +4,25 @@ from wtforms.validators import DataRequired
 
 
 class StartForm(FlaskForm):
-    # city_outbound = StringField('City outbound', render_kw={"class": "form-control"})
-    city_outbound = StringField('City outbound', render_kw={"class": "typeahead tt-query", "autocomplete": "off", "spellcheck": "false", "type": "text"})
+    city_outbound = StringField('Город отправления', render_kw={"class": "typeahead tt-query", "autocomplete": "off", "spellcheck": "false", "type": "text"})
     outbound_date = DateField(
-                        'Outbound date',
+                        'Дата отправления',
                         validators=[DataRequired()],
                         render_kw={"class": "form-control", "type": "date"}
     )
     inbound_date = DateField(
-                'Inbound date',
+                'Дата возврата',
                 validators=[DataRequired()],
                 render_kw={"class": "form-control", "type": "date"}
     )
-    money = IntegerField('Money',
+    money = IntegerField('Сумма денег ₽',
                          validators=[DataRequired()],
                          render_kw={"class": "form-control"})
 
-    remember_me = BooleanField('Remember Me')
-    submit = SubmitField('GO', render_kw={
+    remember_me = BooleanField('Запомнить')
+    submit = SubmitField('Поиск', render_kw={
                     "class": "btn btn-primary",
-                    "data-loading-text": "<i class='fa fa-spinner fa-spin '></i> Processing Order"})
+                    "id": "btnSubmit",
+                    "onclick": "this.classList.toggle('running')",
+                    "id": "btnSubmit",
+                    })

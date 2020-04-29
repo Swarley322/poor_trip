@@ -1,156 +1,314 @@
 {% extends"base.html" %}
 {% block content %}
 
-<style>
-body {
-background-image: url('https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg');
-background-repeat: no-repeat;
-background-attachment: fixed;
-background-size: asdf;
-}
-</style>
-
-<br><h1><center>askdfnadsjfasdjfajsdflk</center></h1>
-
-<div class="bs-example">
+<center><h1>{{ page_title }}</h1></center>
+<div class="container">
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a href="#airtickets" class="nav-link active" data-toggle="tab">AirTickets</a>
+            <a href="#airtickets" class="nav-link active" data-toggle="tab">Авиабилеты</a>
         </li>
         <li class="nav-item">
-            <a href="#hotels" class="nav-link" data-toggle="tab">Hotels</a>
+            <a href="#attractions" class="nav-link" data-toggle="tab">Достопримечательности</a>
         </li>
         <li class="nav-item">
-            <a href="#attractions" class="nav-link" data-toggle="tab">Attractions</a>
+            <a href="#prices" class="nav-link" data-toggle="tab">Цены на проживание</a>
         </li>
     </ul>
 
-
-
-<div class="tab-content">
-    <div class="tab-pane fade show active" id="airtickets">
-        <div style="background-image: url('');">
-        <center><h2 id="airtickets">AirTickets</h2></center>
-        <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="airtickets"><br />
+        <table class="table table-sm table-borderless">
             {% for ticket in tickets_data %}
-                <div class="row">
-                    <div class="col-md-2">
-                        {% if ticket.forward.logo_url and ticket.forward.company %}
-                            <p><img src="{{ ticket.forward.logo_url }}" width="50" height="50">{{ticket.forward.company}}</p>
-                        {% endif %}
-                        <br>
-                        {% if ticket.backward.logo_url and ticket.backward.company %}
-                            <p><img src="{{ ticket.backward.logo_url }}" width="50" height="50">{{ticket.backward.company}}</p>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-2">
-                        {% if ticket.forward.departure_time %}
-                            <p>{{ticket.forward.departure_time}}</p>
-                        {% endif %}
-                            <br>
-                            <br>
-                        {% if ticket.backward.departure_time %}
-                            <p>{{ticket.backward.departure_time}}</p>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-2">
-                        {% if ticket.forward.flight_duration %}
-                            <p>{{ticket.forward.flight_duration}}</p>
-                        {% endif %}
-                        <br>
-                        <br>
-                            <p>{{ticket.backward.flight_duration}}</p>
-                    </div>
-                    <div class="col-md-2">
-                        {% if ticket.forward.arrival_time %}
-                            <p>{{ticket.forward.arrival_time}}</p>
-                        {% endif %}
-                        {% if ticket.forward.arrival_date %}
-                            <p style="font-size:50%;">{{ticket.forward.arrival_date}}</p>
-                        {% endif %}
-                        <br>
-                        <br>
-                        {% if ticket.backward.arrival_time %}
-                            <p>{{ticket.backward.arrival_time}}</p>
-                        {% endif %}
-                        {% if ticket.backward.arrival_date %}
-                            <p style="font-size:50%;">{{ticket.backward.arrival_date}}</p>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-2">
-                {% if ticket.forward.airports %}
-                <p>{{ticket.forward.airports}}</p>
-                {% endif %}
-                {% if ticket.forward.transfer_city %}
-                <p style="font-size:50%;">{{ticket.forward.transfer_city}}</p>
-                {% endif %}
-                <br>
-                {% if ticket.backward.airports %}
-                <p>{{ticket.backward.airports}}</p>
-                {% endif %}
-                {% if ticket.backward.transfer_city%}
-                <p style="font-size:50%;">{{ticket.backward.transfer_city}}</p>
-                {% endif %}
-                    </div>
-                    <div class="col-md-2">
-                        <center>
-                <p>{{ticket.price}} rub</p>
-                <p>{{ticket.luggage}}</p>
-                <a href="{{ ticket.buy_url }}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Buy ticket</a>
-                        </center>
-                    </div>
-                </div>
-                <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Авиакомпания <svg class="bi bi-award-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 0l1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864 8 0z"/>
+                        <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/>
+                    </svg></th>
+                    <th>Направление <svg class="bi bi-geo" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 4a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path d="M7.5 4h1v9a.5.5 0 01-1 0V4z"/>
+                        <path fill-rule="evenodd" d="M6.489 12.095a.5.5 0 01-.383.594c-.565.123-1.003.292-1.286.472-.302.192-.32.321-.32.339 0 .013.005.085.146.21.14.124.372.26.701.382.655.246 1.593.408 2.653.408s1.998-.162 2.653-.408c.329-.123.56-.258.701-.382.14-.125.146-.197.146-.21 0-.018-.018-.147-.32-.339-.283-.18-.721-.35-1.286-.472a.5.5 0 11.212-.977c.63.137 1.193.34 1.61.606.4.253.784.645.784 1.182 0 .402-.219.724-.483.958-.264.235-.618.423-1.013.57-.793.298-1.855.472-3.004.472s-2.21-.174-3.004-.471c-.395-.148-.749-.336-1.013-.571-.264-.234-.483-.556-.483-.958 0-.537.384-.929.783-1.182.418-.266.98-.47 1.611-.606a.5.5 0 01.595.383z" clip-rule="evenodd"/>
+                    </svg></th>
+                    <th>Время вылета <svg class="bi bi-caret-up-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 00.753-1.659l-4.796-5.48a1 1 0 00-1.506 0z"/>
+                    </svg></th>
+                    <th>Время в пути <svg class="bi bi-clock-history" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M8.515 1.019A7 7 0 008 1V0a8 8 0 01.589.022l-.074.997zm2.004.45a7.003 7.003 0 00-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 00-.439-.27l.493-.87a8.025 8.025 0 01.979.654l-.615.789a6.996 6.996 0 00-.418-.302zm1.834 1.79a6.99 6.99 0 00-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 00-.214-.468l.893-.45a7.976 7.976 0 01.45 1.088l-.95.313a7.023 7.023 0 00-.179-.483zm.53 2.507a6.991 6.991 0 00-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 01-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 01-.401.432l-.707-.707z" clip-rule="evenodd"/>
+                        <path fill-rule="evenodd" d="M8 1a7 7 0 104.95 11.95l.707.707A8.001 8.001 0 118 0v1z" clip-rule="evenodd"/>
+                        <path fill-rule="evenodd" d="M7.5 3a.5.5 0 01.5.5v5.21l3.248 1.856a.5.5 0 01-.496.868l-3.5-2A.5.5 0 017 9V3.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
+                    </svg></th>
+                    <th>Время прилета <svg class="bi bi-caret-down-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 01.753 1.659l-4.796 5.48a1 1 0 01-1.506 0z"/>
+                    </svg></th>
+                    <th>Цена <svg class="bi bi-wallet" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M1.5 3a.5.5 0 00-.5.5v2h5a.5.5 0 01.5.5c0 .253.08.644.306.958.207.288.557.542 1.194.542.637 0 .987-.254 1.194-.542.226-.314.306-.705.306-.958a.5.5 0 01.5-.5h5v-2a.5.5 0 00-.5-.5h-13zM15 6.5h-4.551a2.678 2.678 0 01-.443 1.042C9.613 8.088 8.963 8.5 8 8.5c-.963 0-1.613-.412-2.006-.958A2.679 2.679 0 015.551 6.5H1v6a.5.5 0 00.5.5h13a.5.5 0 00.5-.5v-6zm-15-3A1.5 1.5 0 011.5 2h13A1.5 1.5 0 0116 3.5v9a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 010 12.5v-9z" clip-rule="evenodd"/>
+                    </svg></th>
+                </tr>
+            </thead>
+
+            
+            <tbody>
+                <tr>
+                    {% if ticket.forward.logo_url and ticket.forward.company %}
+                        <td><img src="{{ ticket.forward.logo_url }}" width="50" height="50"> 
+                            <p>{{ticket.forward.company}}</p></td>
+                        {% else %}
+                        <td></td>
+                    {% endif %}
+
+                    {% if ticket.forward.airports %}
+                        <td>{{ticket.forward.airports}}
+                    {% endif %}
+                    <p style="font-size:70%">{% if ticket.forward.transfer_city %}
+                        {{ticket.forward.transfer_city}}
+                    {% endif %}
+
+                    {% if ticket.forward.transfer_duration %}<br />
+                        {{ticket.forward.transfer_duration}}
+                    {% endif %}
+
+                    {% if ticket.forward.direct_flight %}
+                        {{ticket.forward.direct_flight}}</p></td>
+                    {% endif %}
+
+                    {% if ticket.forward.departure_time %}
+                        <td>{{ticket.forward.departure_time}}</td>
+                    {% endif %}
+
+                    {% if ticket.forward.flight_duration %}
+                        <td>{{ticket.forward.flight_duration}}</td>
+                    {% endif %}
+
+                    {% if ticket.forward.arrival_time %}
+                        <td>{{ticket.forward.arrival_time}}
+                    {% endif %}
+
+                    {% if ticket.forward.arrival_date %}
+                        <p style="font-size:80%">{{ticket.forward.arrival_date}}</p></td>
+                        {% set checkin = ticket.forward.arrival_date %}
+                    {% else %} 
+                        {% set checkin = outbound_date %}
+                    {% endif %}
+                    
+                    <td>
+                        {{ticket.price}} ₽
+                        <p style="font-size:80%">{{ticket.luggage}}</p>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    {% if ticket.backward.logo_url and ticket.backward.company %}
+                    <td><img src="{{ticket.backward.logo_url}}" width="50" height="50">
+                        <p>{{ticket.backward.company}}</p></td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+
+                    {% if ticket.backward.airports %}
+                        <td>{{ticket.backward.airports}}
+                    {% endif %}
+                    <p style="font-size:70%">{% if ticket.backward.transfer_city %}
+                    {{ticket.backward.transfer_city}}
+                    {% endif %}
+
+                    {% if ticket.backward.transfer_duration %}<br />
+                        {{ticket.backward.transfer_duration}}
+                    {% endif %}
+                    
+                    {% if ticket.backward.direct_flight %}
+                        {{ticket.backward.direct_flight}}</p>
+                    </td>
+                    {% endif %}
+
+                    {% if ticket.backward.departure_time %}
+                        <td>{{ticket.backward.departure_time}}</td>
+                    {% endif %}
+
+                    {% if ticket.backward.flight_duration %}
+                        <td>{{ticket.backward.flight_duration}}</td>
+                    {% endif %}
+
+                    {% if ticket.backward.arrival_time %}
+                        <td>{{ticket.backward.arrival_time}}
+                    {% endif %}
+
+                    {% if ticket.backward.arrival_date %}
+                        <p style="font-size:80%">{{ticket.backward.arrival_date}}</p></td>
+                    {% endif %}
+
+                    <td>
+                    <p> 
+                        <a href="{{ url_for('trip.hotels', ticket_price=ticket.price, city_inbound=city_inbound, checkin=checkin, checkout=inbound_date, outbound_date=outbound_date, city_outbound=city_outbound, forward_flight_duration=ticket.forward.flight_duration, backward_flight_duration=ticket.backward.flight_duration) }}" target="_blank">
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="popover" title="Достпуные отели" data-content="Список доступных отелей с учетом цены билета и вашего бюджета">
+                        Отели <svg class="bi bi-house" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M2 13.5V7h1v6.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V7h1v6.5a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 13.5zm11-11V6l-2-2V2.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5z" clip-rule="evenodd"/>
+                        <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 011.414 0l6.647 6.646a.5.5 0 01-.708.708L8 2.207 1.354 8.854a.5.5 0 11-.708-.708L7.293 1.5z" clip-rule="evenodd"/>
+                        </svg></button></a>
+                    </p>
+                    </td>
+                </tr>
+            </tbody >
             {% endfor %}
+        </table>
         </div>
-    </div>
 
 
-
-    <div class="tab-pane fade" id="hotels">
-        <center><h2 id="hotels">Hotels</h2></center>
-        <div class="row row row-cols-1 row-cols-md-3">
-            {% for hotel in hotel_list %}
-            <div class="card-columns">
-                <div class="card" style="width: 18rem;">
-                    <img src="{{ hotel.img }}" class="card-img-top" alt="">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ hotel.hotel_name }}</h5>
-                        <p class="card-text">
-                            price: {{ hotel.price }} rub </br>
-                            rating: {{ hotel.rating }} </br>
-                            reviews: {{ hotel.reviews }}
-                        </p>
-                        <a href="{{ hotel.url }}" class="btn btn-primary">Book</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-
-    <div class="tab-pane fade" id="attractions">
-        <center><h2 id="attractions">Attractions</h2></center>
-        <div class="row row row-cols-1 row-cols-md-3">
-            {% for attraction in attractions_list %}
-                <div class="card-columns">
-                    <div class="card" style="width: 18rem;">
-                        <img src="{{ attraction.img_url }}" class="card-img-top" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ attraction.name }}</h5>
-                            <p class="card-text">{{ attraction.description }}</p>
-                            <a href="{{ attraction.url }}" class="btn btn-primary">link</a>
+        <div class="tab-pane fade" id="attractions">
+            <br />
+            <div class="row row-cols-3">
+                {% for attraction in attractions_list[0:3] %}
+                <div class="blogBox moreBox">
+                    <div class="card-columns">
+                        <div class="card" style="width: 22rem;">
+                            <img src="{{ attraction.img_url }}" class="card-img-top" alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ attraction.name }}</h5>
+                                <p class="card-text">{{ attraction.description }}</p>
+                                <a href="{{ attraction.url }}" class="btn btn-primary" target="_blank">Подробнее</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            
                 {% endfor %}
 
+                {% for attraction in attractions_list[3:] %}
+                <div class="blogBox moreBox" style="display: none;">
+                    <div class="card-columns">
+                        <div class="card" style="width: 22rem;">
+                            <img src="{{ attraction.img_url }}" class="card-img-top" alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ attraction.name }}</h5>
+                                <p class="card-text">{{ attraction.description }}</p>
+                                <a href="{{ attraction.url }}" class="btn btn-primary" target="_blank">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="loadMore" style="">
+                <a href="#">Еще</a>
+             </div>
+        </div>
+
+        <div class="tab-pane fade" id="prices">
+            <br />
+            <div class="row row-cols-3">
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/cafe.jpeg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Обед в недорогом ресторане</h5>
+                            <p class="card-text">{{ living_prices["Meal, Inexpensive Restaurant"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/restoraunt.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Обед на двоих в обычном ресторане</h5>
+                            <p class="card-text">{{ living_prices["Meal for 2 People, Mid-range Restaurant, Three-course"] }} ₽</p>
+                        </div>
+                    </div>restoraunt
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/mac.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">МакКомбо (или эквивалентный набор)</h5>
+                            <p class="card-text">{{ living_prices["McMeal at McDonalds (or Equivalent Combo Meal)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/capuccino.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Каппучино (стандартный)</h5>
+                            <p class="card-text">{{ living_prices["Cappuccino (regular)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/coke.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Кока-кола 0,33 л</h5>
+                            <p class="card-text">{{ living_prices["Coke/Pepsi (0.33 liter bottle)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/water.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Вода 0,33 л</h5>
+                            <p class="card-text">{{ living_prices["Water (0.33 liter bottle)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/marlboro.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Сигареты (Marlboro)</h5>
+                            <p class="card-text">{{ living_prices["Cigarettes 20 Pack (Marlboro)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/transport.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Билет на одну поездку в городском транспорте</h5>
+                            <p class="card-text">{{ living_prices["One-way Ticket (Local Transport)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/taxi.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Цена такси (1 км)</h5>
+                            <p class="card-text">{{ living_prices["Taxi 1km (Normal Tariff)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/gas.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Бензин 1 л</h5>
+                            <p class="card-text">{{ living_prices["Gasoline (1 liter)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/mobile.png') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Сотовая связь (1 мин)</h5>
+                            <p class="card-text">{{ living_prices["1 min. of Prepaid Mobile Tariff Local (No Discounts or Plans)"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-columns">
+                    <div class="card" style="width: 22rem;">
+                        <img src="{{ url_for('static', filename='/img/prices/cinema.jpg') }}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">Билет в кино</h5>
+                            <p class="card-text">{{ living_prices["Cinema, International Release, 1 Seat"] }} ₽</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     </div>
+    
 </div>
-</div> 
 
 
 {% endblock %}

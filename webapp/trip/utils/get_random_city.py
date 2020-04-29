@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 from webapp.trip.models import City
 from webapp.trip.utils.get_ticket_prices import get_user_ticket
@@ -20,6 +21,7 @@ def get_random_city(city_outbound, outbound_date, inbound_date, user_money):
             cheapest_ticket = min(tickets["recommended"], key=lambda x: x["price"])
             if cheapest_ticket["forward"]["arrival_date"]:
                 checkin = cheapest_ticket["forward"]["arrival_date"]
+                checkin = datetime.strptime(checkin, "%d-%m-%Y").strftime("%d/%m/%Y")
             else:
                 checkin = outbound_date.strftime("%d/%m/%Y")
 

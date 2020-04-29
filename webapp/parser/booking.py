@@ -62,24 +62,6 @@ def get_url(city, checkin_arg, checkout_arg):
     return url
 
 
-# def get_html(url):
-#     chrome_options = Options()
-#     chrome_options.add_argument('--headless')
-#     # chrome_options.add_argument('--no-sandbox')
-#     # chrome_options.add_argument('--disable-dev-shm-usage')
-#     chrome_options.add_argument('--disable-extensions')
-#     chrome_options.add_argument('--disable-gpu')
-#     capabilities = chrome_options.to_capabilities()
-#     # driver = webdriver.Chrome(options=chrome_options)
-#     driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", desired_capabilities=capabilities)
-#     driver.get(url)
-#     time.sleep(3)
-#     html = driver.page_source
-#     driver.close()
-#     driver.quit()
-#     return html
-
-
 def get_valid_value(value):
     return value if value else None
 

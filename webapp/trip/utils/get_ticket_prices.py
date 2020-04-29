@@ -16,6 +16,18 @@ def get_id(city):
     return AirportId.query.filter(AirportId.city == city.lower()).first().airport_id
 
 
+def checking_parsing_date(request_date):
+    """"request_date - string object in format %d/%m/%Y %H:%M
+    returning True if delta between request_date and current_time lower than 1 hour"""
+
+    current_time = datetime.now()
+    delta = current_time - datetime.strptime(request_date, "%Y-%m-%d %H:%M")
+    if delta.days == 0 and (delta.seconds//60) % 60 <= 61 and delta.seconds//3600 <= 1:
+        return True
+    else:
+        return False
+
+
 def get_user_ticket(city_outbound, city_inbound, outbound_date, inbound_date, adults_number=1):
     """
     """
@@ -30,17 +42,16 @@ def get_user_ticket(city_outbound, city_inbound, outbound_date, inbound_date, ad
         adults_number=adults_number
     )
 
-    parsing_date = datetime.now().strftime("%Y-%m-%d %H")
+    parsing_date = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     city_outbound_id = AirportId.query.filter_by(city=city_outbound.lower()).first().id
     city_inbound_id = City.query.filter_by(ru_name=city_inbound.lower()).first().id
+    tickets_list = Ticket.query.filter_by(city_outbound_id=city_outbound_id) \
+                               .filter_by(city_inbound_id=city_inbound_id) \
+                               .filter_by(outbound_date=outbound_date.strftime("%Y-%m-%d")) \
+                               .filter_by(inbound_date=inbound_date.strftime("%Y-%m-%d")).all()
 
-    ticket_exist = db.session.query(
-                    db.exists().where(Ticket.city_outbound_id == city_outbound_id)
-                               .where(Ticket.city_inbound_id == city_inbound_id)
-                               .where(Ticket.outbound_date == outbound_date.strftime("%Y-%m-%d"))
-                               .where(Ticket.inbound_date == inbound_date.strftime("%Y-%m-%d"))
-                               .where(Ticket.parsing_date == parsing_date)).scalar()
+    ticket_exist = [ticket for ticket in tickets_list if checking_parsing_date(ticket.parsing_date)]
 
     if not ticket_exist:
         print(f"parsing tickets for {city_inbound}, {outbound_date}///{inbound_date}")
@@ -72,13 +83,27 @@ def get_user_ticket(city_outbound, city_inbound, outbound_date, inbound_date, ad
             print(f"No ticket outbound-{city_outbound}/inbound-{city_inbound}")
             return False
     else:
-        ticket = Ticket.query.filter(Ticket.city_outbound_id == city_outbound_id) \
-                             .filter(Ticket.city_inbound_id == city_inbound_id) \
-                             .filter(Ticket.outbound_date == outbound_date.strftime("%Y-%m-%d")) \
-                             .filter(Ticket.inbound_date == inbound_date.strftime("%Y-%m-%d")) \
-                             .filter(Ticket.parsing_date == parsing_date).first()
+        ticket = ticket_exist[0]
+        print(ticket)
         if not ticket.price:
             print(f"No ticket outbound-{city_outbound}/inbound-{city_inbound}")
             return False
         else:
             return ticket.price
+
+
+def find_ticket(city_outbound, city_inbound, outbound_date, inbound_date, forward_flight_duration, backward_flight_duration, price):
+    city_outbound_id = AirportId.query.filter_by(city=city_outbound.lower()).first().id
+    city_inbound_id = City.query.filter_by(ru_name=city_inbound.lower()).first().id
+    tickets = Ticket.query.filter_by(city_outbound_id=city_outbound_id) \
+                          .filter_by(city_inbound_id=city_inbound_id) \
+                          .filter_by(outbound_date=datetime.strptime(outbound_date, "%d-%m-%Y").strftime("%Y-%m-%d")) \
+                          .filter_by(inbound_date=datetime.strptime(inbound_date, "%d-%m-%Y").strftime("%Y-%m-%d")).all()
+    for ticket_list in tickets:
+        valid_parsing_date = checking_parsing_date(ticket_list.parsing_date)
+        if valid_parsing_date:
+            for ticket in ticket_list.price:
+                result = [ticket for _, tickets in ticket_list.price.items() for ticket in tickets if ticket['price'] == price and ticket['forward']['flight_duration'] == forward_flight_duration and ticket['backward']['flight_duration'] == backward_flight_duration]
+                if result:
+                    return result[0]
+    return False

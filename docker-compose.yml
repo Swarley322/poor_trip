@@ -3,10 +3,13 @@ services:
     redis:
         image: redis
         container_name: redis
+        restart: always
         networks:
             - my-network
     selenium:
         image: selenium/standalone-chrome:3.141.59-20200326
+        container_name: selenium
+        restart: always
         volumes:
             - /dev/shm:/dev/shm
         networks:
@@ -54,6 +57,7 @@ services:
             context: .
             target: celery
         container_name: celery
+        restart: always
         environment:
             - CELERY_BROKER_URL=redis://redis:6379/
             - FLASK_APP=webapp
@@ -68,6 +72,7 @@ services:
     nginx:
         image: nginx:1.13.7
         container_name: nginx
+        restart: always
         depends_on: 
             - webapp
         networks:
