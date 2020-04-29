@@ -222,8 +222,12 @@ def get_all_hotels(city, checkin, checkout):
             print(f"HTML for {page + 1}/{pages} doesn't returned, requesting again")
             html = get_html(url)
             if not html:
-                print(f"HTML for {page + 1}/{pages}doesn't returned at all")
-                return False
+                time.sleep(get_random_sleep_time())
+                print(f"HTML for {page + 1}/{pages} doesn't returned, requesting again 2")
+                html = get_html(url)
+                if not html:
+                    print(f"HTML for {page + 1}/{pages}doesn't returned at all")
+                    return True
         try:
             get_hotel_information(html, city, checkin, checkout)
             url = get_next_page_href(html)
