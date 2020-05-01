@@ -9,7 +9,7 @@ from webapp.admin.views import blueprint as admin_blueprint
 from webapp.trip.views import blueprint as trip_blueprint
 
 
-def create_app():  # export FLASK_APP=webapp && export FLASK_ENV=development && FLASK_APP_PORT=5000 && flask run --host=0.0.0.0
+def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)

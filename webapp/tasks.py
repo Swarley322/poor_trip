@@ -10,13 +10,13 @@ app = create_app()
 db.init_app(app)
 
 
-# CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 celery = Celery('tasks', broker=CELERY_BROKER_URL)
 
 
-@celery.task(time_limit=300)
+@celery.task(time_limit=420)
 def get_hotels():
     with app.app_context():
         print(get_hotels_task())
@@ -45,8 +45,3 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(crontab(minute=57, hour=20), clear_cities_txt.s())
     sender.add_periodic_task(crontab(minute=0, hour=21), create_city_list.s())
     sender.add_periodic_task(crontab(minute=5, hour=21), get_live_prices.s())
-
-
-# @celery.task()
-# def task1():
-#     print("run task1")
