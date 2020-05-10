@@ -20,16 +20,3 @@ def test_registration_page(client):
 
 def test_login_page(client):
     assert client.get("/users/login").status_code == 200
-
-
-def test_register(client):
-    pass
-
-# @pytest.mark.parametrize(
-#     ("username", "password"),
-#     (("a", "test", b"Incorrect username."), ("test", "a", b"Incorrect password.")),
-# )
-# def test_login(client):
-#     response = client.post("/users/process-login", data={"Имя пользователя": "dima", "Пароль": "123456"})
-#     print(response.data)
-#     assert b"Poor-trip" in response.data
