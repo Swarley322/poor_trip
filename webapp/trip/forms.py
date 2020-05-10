@@ -4,7 +4,12 @@ from wtforms.validators import DataRequired
 
 
 class StartForm(FlaskForm):
-    city_outbound = StringField('Город отправления', render_kw={"class": "typeahead tt-query", "autocomplete": "off", "spellcheck": "false", "type": "text"})
+    city_outbound = StringField('Город отправления', render_kw={
+                                        "class": "typeahead tt-query",
+                                        "autocomplete": "off",
+                                        "spellcheck": "false",
+                                        "type": "text"
+    })
     outbound_date = DateField(
                         'Дата отправления',
                         validators=[DataRequired()],
@@ -25,4 +30,4 @@ class StartForm(FlaskForm):
                     "id": "btnSubmit",
                     "onclick": "this.classList.toggle('running')",
                     "id": "btnSubmit",
-                    })
+    })

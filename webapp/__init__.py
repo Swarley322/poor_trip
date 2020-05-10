@@ -3,10 +3,10 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 
 from webapp.db import db
-from webapp.user.models import User
-from webapp.user.views import blueprint as user_blueprint
 from webapp.admin.views import blueprint as admin_blueprint
 from webapp.trip.views import blueprint as trip_blueprint
+from webapp.user.models import User
+from webapp.user.views import blueprint as user_blueprint
 
 
 def create_app():

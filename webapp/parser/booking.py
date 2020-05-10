@@ -185,7 +185,8 @@ def repeat_get_html(url):
 
 
 def get_all_hotels(city, checkin, checkout):
-    """Parsing all hotels in the city in 7 days range, adding all hotels information and averageinfo in db
+    """Parsing all hotels in the city in 7 days range,
+       adding all hotels information and averageinfo in db
 
     params:
     - city: string object, city name in russian

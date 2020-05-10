@@ -3,27 +3,6 @@ import csv
 
 translator = Translator()
 
-
-# PART_OF_THE_WORLD = {
-#         "Europe": {
-#             "England": ["London"],
-#             "Russia": ["Moscow", "Saint-Petersburg"],
-#             "Germany": ["Berlin"],
-#             "France": ["Paris"],
-#             "Spain": ["Barcelona", "Madrid"]
-#             },
-#         "Asia": {
-#             "Japan": ["Tokyo", "Kyoto"],
-#             "South Korea": ["Seoul"],
-#             "China": ["Beijing", "Hong Kong"],
-#             "Singapore": ["Singapore"]
-#             },
-#         "America": {
-#             "USA": ["New-York", "Las-Vegas"],
-#             "Canada": ["Toronto"]
-#             }
-#     }
-
 result = []
 
 for world_part, country_list in PART_OF_THE_WORLD.items():

@@ -1,6 +1,6 @@
-from webapp.trip.utils.get_ticket_prices import get_user_ticket
 from webapp.trip.utils.get_attractions import get_attractions_list
 from webapp.trip.utils.get_living_prices import get_living_prices
+from webapp.trip.utils.get_ticket_prices import get_user_ticket
 
 
 def get_city_information(city_outbound, city_inbound, outbound_date, inbound_date, user_money):

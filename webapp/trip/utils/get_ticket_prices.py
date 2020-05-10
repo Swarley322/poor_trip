@@ -92,7 +92,10 @@ def get_user_ticket(city_outbound, city_inbound, outbound_date, inbound_date, ad
             return ticket.price
 
 
-def find_ticket(city_outbound, city_inbound, outbound_date, inbound_date, forward_flight_duration, backward_flight_duration, price):
+def find_ticket(
+        city_outbound, city_inbound, outbound_date, inbound_date,
+        forward_flight_duration, backward_flight_duration, price
+):
     city_outbound_id = AirportId.query.filter_by(city=city_outbound.lower()).first().id
     city_inbound_id = City.query.filter_by(ru_name=city_inbound.lower()).first().id
     tickets = Ticket.query.filter_by(city_outbound_id=city_outbound_id) \

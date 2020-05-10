@@ -6,11 +6,3 @@ with open('ru_cities.csv', 'r', encoding='utf-8', newline='') as f:
     cities = csv.DictReader(f, fields, delimiter=',')
     for city in cities:
         print(city['name'])
-
-
-
-# with open('ids.csv', 'a+', encoding='utf-8', newline='') as f:
-#     fields = ["city","id"]
-#     writer = csv.DictWriter(f, delimiter=';', fieldnames=fields)
-#     for city in result:
-#         writer.writerow(city)

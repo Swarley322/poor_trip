@@ -5,7 +5,7 @@ from webapp.trip.utils.get_ticket_prices import get_user_ticket
 
 
 def get_affordable_cities(city_outbound, outbound_date, inbound_date, user_money):
-    """Function 
+    """
     """
     today_parsing_date = datetime.now(timezone("Europe/Moscow")).strftime("%d/%m/%Y")
     yesterday_parsing_date = (datetime.now(timezone("Europe/Moscow")) - timedelta(days=1)).strftime("%d/%m/%Y")

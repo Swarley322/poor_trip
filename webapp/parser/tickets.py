@@ -104,13 +104,15 @@ def get_ticket_information(soup):
 
 
 def get_tickets_data(html):
-    
+
     soup = BS(html, 'html.parser')
     result = {"recommended": [], "common": []}
     tickets = soup.find("div", class_="serp-layout_kb__content")
 
     try:
-        recommended_tickets = tickets.find("div", class_="tabs-container_kb _init").find("table", class_="cards_kb__table").find_all("tbody", class_="flight_list _init")
+        recommended_tickets = tickets.find("div", class_="tabs-container_kb _init") \
+                                     .find("table", class_="cards_kb__table") \
+                                     .find_all("tbody", class_="flight_list _init")
     except AttributeError:
         print("No recommended tickets")
         return False
@@ -119,7 +121,9 @@ def get_tickets_data(html):
         result["recommended"].append(get_ticket_information(ticket))
 
     try:
-        common_tickets = tickets.find("div", class_="flights-list_kb__table").find("table", class_="flights-list_kb__inner-table").find_all("tbody", class_="flight_list _init")
+        common_tickets = tickets.find("div", class_="flights-list_kb__table") \
+                                .find("table", class_="flights-list_kb__inner-table") \
+                                .find_all("tbody", class_="flight_list _init")
     except AttributeError:
         print("No common tickets")
         return result

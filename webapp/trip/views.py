@@ -1,17 +1,17 @@
 import time
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
-from flask import Blueprint, flash, render_template, redirect, session, url_for, request
+from flask import Blueprint, flash, render_template, redirect, session, url_for
 from flask_login import current_user, login_required
 
 from webapp.trip.forms import StartForm
 from webapp.trip.models import AirportId
-from webapp.trip.utils.get_random_city import get_random_city
 from webapp.trip.utils.get_affordable_cities import get_affordable_cities
 from webapp.trip.utils.get_city_information import get_city_information
+from webapp.trip.utils.get_random_city import get_random_city
 from webapp.trip.utils.get_recommended_hotels import get_best_hotels
-from webapp.trip.utils.get_ticket_prices import find_ticket
 from webapp.trip.utils.get_redirect_url import get_redirect_target
+from webapp.trip.utils.get_ticket_prices import find_ticket
 
 blueprint = Blueprint("trip", __name__)
 
@@ -98,6 +98,7 @@ def process_data():
         inbound_date = form.inbound_date.data
 
         airports = AirportId.query.filter(AirportId.city == city_outbound.lower().strip()).count()
+        # check valid airport
         if airports:
             session['city_outbound'] = city_outbound.lower()
         else:
@@ -119,7 +120,7 @@ def process_data():
             session['user_money'] = user_money
 
         session["request_date"] = datetime.now().strftime("%d/%m/%Y %H:%M")
-        
+
         if current_user.is_authenticated:
             session["login_request_date"] = datetime.now().strftime("%d/%m/%Y %H:%M")
 
@@ -138,7 +139,6 @@ def process_data():
 
     flash("Введены неверные данные")
     return redirect(url_for('trip.start'))
-
 
 
 @blueprint.route('/index/<string:city_inbound>', methods=["GET"])
@@ -160,7 +160,7 @@ def index(city_inbound):
             living_prices = data["living_prices"]
             tickets_list = [ticket for _, tickets in data["tickets"].items() for ticket in tickets if ticket['price'] <= user_money * 0.8]
             sorted_tickets_by_price = sorted(tickets_list, key=lambda x: x["price"])
- 
+
             return render_template(
                         'trip/index.html',
                         page_title=title,
@@ -181,8 +181,13 @@ def index(city_inbound):
         return redirect(url_for('trip.start'))
 
 
-@blueprint.route('/hotels/<int:ticket_price>/<string:city_inbound>/<string:checkin>/<string:checkout>/<string:outbound_date>/<string:city_outbound>/<string:forward_flight_duration>/<string:backward_flight_duration>/', methods=["GET"])
-def hotels(ticket_price, city_inbound, checkin, checkout, outbound_date, city_outbound, forward_flight_duration, backward_flight_duration):
+@blueprint.route("""/hotels/<int:ticket_price>/<string:city_inbound>
+                    /<string:checkin>/<string:checkout>/<string:outbound_date>
+                    /<string:city_outbound>/<string:forward_flight_duration>
+                    /<string:backward_flight_duration>/""", methods=["GET"])
+def hotels(ticket_price, city_inbound, checkin, checkout,
+           outbound_date, city_outbound, forward_flight_duration,
+           backward_flight_duration):
     try:
         if current_user.is_authenticated:
             valid_request = checking_request_time(session["login_request_date"])
@@ -196,7 +201,15 @@ def hotels(ticket_price, city_inbound, checkin, checkout, outbound_date, city_ou
         return redirect(url_for('trip.start'))
 
     money_amount = session["user_money"] - ticket_price
-    ticket = find_ticket(city_outbound, city_inbound, outbound_date, checkout, forward_flight_duration, backward_flight_duration, ticket_price)
+    ticket = find_ticket(
+                    city_outbound,
+                    city_inbound,
+                    outbound_date,
+                    checkout,
+                    forward_flight_duration,
+                    backward_flight_duration,
+                    ticket_price
+    )
     if not ticket:
         flash("Заполните форму заново, информация по билетам могла устареть")
         return redirect(url_for('trip.start'))
@@ -205,7 +218,12 @@ def hotels(ticket_price, city_inbound, checkin, checkout, outbound_date, city_ou
     checkout = datetime.strptime(checkout, "%d-%m-%Y").strftime("%d/%m/%Y")
     hotel_list = get_best_hotels(city_inbound, checkin, checkout, money_amount)
     if hotel_list:
-        return render_template("trip/hotels.html", hotel_list=hotel_list, page_title=city_inbound.title(), ticket=ticket)
+        return render_template(
+                    "trip/hotels.html",
+                    hotel_list=hotel_list,
+                    page_title=city_inbound.title(),
+                    ticket=ticket
+        )
     else:
         flash("Нет доступных отелей с выбранным билетом")
         return redirect(get_redirect_target())

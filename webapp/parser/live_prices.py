@@ -1,7 +1,5 @@
 import time
 
-from datetime import datetime
-from pytz import timezone
 from bs4 import BeautifulSoup as BS
 
 from webapp.db import db
@@ -14,7 +12,6 @@ def get_live_prices(html):
     info = soup.find("table", class_="data_wide_table").find_all('tr')
     result = {}
     for price in info:
-        # a.append(price)
         try:
             name = price.find("td").text.strip()
             value = price.find("td", class_="priceValue").text.strip()
@@ -26,13 +23,12 @@ def get_live_prices(html):
                 result.update({name: float(value.replace(",", "").replace("\xa0руб", ""))})
             except AttributeError:
                 continue
-
-    # print(result)
     return result
 
 
 def safe_city_prices(city):
     """city - eng city name (Moscow)"""
+
     url = f"https://www.numbeo.com/cost-of-living/in/{city.title()}?displayCurrency=RUB"
     html = get_html(url)
     if not html:
