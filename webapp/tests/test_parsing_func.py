@@ -17,24 +17,6 @@ def test_parsing_one_page():
         assert result1 > 0
 
 
-def test_safe_information():
-    with app.app_context():
-        result = safe_information(
-                    city="Москва",
-                    hotel_name="test hotel",
-                    week_price=10000,
-                    hotel_link="test_link",
-                    rating=1.1,
-                    reviews=1000,
-                    img_url="test_url",
-                    distance="test_distance",
-                    stars="test_stars",
-                    checkin="10/10/2020",
-                    checkout="10/10/2020"
-        )
-        assert result == "information saved"
-
-
 def test_get_living_prices():
     with app.app_context():
         url = "https://www.numbeo.com/cost-of-living/in/{}?displayCurrency=RUB".format("Moscow")
