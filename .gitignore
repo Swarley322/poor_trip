@@ -17,3 +17,5 @@ test_volume
 *.pyc
 get_hotels.py
 create_admin.py
+.pytest_cache
+

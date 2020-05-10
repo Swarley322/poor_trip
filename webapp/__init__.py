@@ -9,7 +9,7 @@ from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)
